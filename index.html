@@ -143,6 +143,10 @@ svg .head-s{fill:var(--stream)}
 svg .head-b{fill:var(--batch)}
 svg .head-d{fill:var(--muted)}
 svg .head-w{fill:var(--warn)}
+
+.annexe{border:1px solid var(--line);border-radius:10px;padding:14px 18px;background:var(--surface)}
+.annexe summary{cursor:pointer;font-weight:600;color:var(--accent)}
+@media print{details.annexe>*{display:block!important}details.annexe>summary{display:none!important}}
 </style>
 </head>
 <body>
@@ -154,8 +158,7 @@ svg .head-w{fill:var(--warn)}
 
 <header class="doc">
   <p class="kicker">Artify · plateforme data · High-Level Design</p>
-  <h1>HLD de la plateforme data: lakehouse par domaines, streaming et batch</h1>
-  <p>Ce document décrit, à grande maille, la plateforme data d'Artify: un lakehouse serverless sur AWS (S3 et Iceberg, en architecture médaillon), alimenté par deux chemins et organisé par domaines dans une approche Data Mesh. Les deux chemins sont un chemin en continu pour les événements du lecteur vidéo, disponibles en quelques minutes, et un chemin en lots, orchestré chaque jour, qui construit les données de référence. Il complète le DAT de la plateforme. Le détail de chaque brique relève du LLD.</p>
+  <h1>HLD de la plateforme data: lakehouse par domaines, streaming et batch</h1><p>Architecture de la plateforme data Artify, de la collecte des événements et des sources métier à la publication de produits de données sur AWS.</p>
   <div class="meta">
     <div><b>Périmètre</b><br>Lakehouse par domaines, streaming, batch</div>
     <div><b>Auteur</b><br>L'architecte data, concepteur de la plateforme</div>
@@ -164,69 +167,33 @@ svg .head-w{fill:var(--warn)}
   </div>
 </header>
 
-<nav class="toc" aria-label="Sommaire">
-  <b>Sommaire</b>
-  <ol>
-    <li><a href="#principes">Principes d'architecture</a></li>
-    <li><a href="#vue">Vue d'ensemble</a></li>
-    <li><a href="#lakehouse">Architecture data: lakehouse serverless en médaillon</a></li>
-    <li><a href="#streaming">Partie streaming</a></li>
-    <li><a href="#batch">Partie batch</a></li>
-    <li><a href="#qualite">Qualité des données</a></li>
-    <li><a href="#catalogue">Catalogue de données</a></li>
-    <li><a href="#securite">Sécurité, gouvernance et conformité</a></li>
-    <li><a href="#observabilite">Observabilité et exploitation</a></li>
-    <li><a href="#dataops">DataOps et déploiement</a></li>
-    <li><a href="#resilience">Résilience, réversibilité et scalabilité</a></li>
-    <li><a href="#couts">FinOps</a></li>
-    <li><a href="#risques">Risques et limites assumées</a></li>
-    <li><a href="#choix">Choix et alternatives écartées</a></li>
-    <li><a href="#glossaire">Glossaire</a></li>
-  </ol>
-</nav>
+<nav class="toc" aria-label="Sommaire"><b>Sommaire</b><ol><li><a href="#contexte">Contexte, objectifs et périmètre</a></li><li><a href="#vue">Vue d’ensemble et objectifs de service</a></li><li><a href="#principes">Principes et principaux choix</a></li><li><a href="#lakehouse">Lakehouse et organisation par domaines</a></li><li><a href="#streaming">Collecte et suivi en quasi temps réel</a></li><li><a href="#batch">Traitements batch et consolidation</a></li><li><a href="#qualite">Qualité, catalogue et lignage</a></li><li><a href="#securite">Sécurité, accès et conformité</a></li><li><a href="#dataops">DataOps et déploiement</a></li><li><a href="#observabilite">Exploitation, reprise et montée en charge</a></li><li><a href="#couts">FinOps</a></li><li><a href="#risques">Limites et évolutions envisagées</a></li></ol><p><a href="#choix">Annexe A. Choix et alternatives</a> · <a href="#capacite">Annexe B. Capacité par service</a> · <a href="#glossaire">Annexe C. Glossaire</a></p></nav>
 
 <!-- ============================================================ -->
 
-<h2 id="principes">1. Principes d'architecture</h2>
-<div class="grid2">
-  <div class="card"><h4>Serverless et managé</h4><ul><li>Peu de serveurs à administrer pour une petite équipe.</li><li>Firehose, Lambda, Fargate, Glue Spark et Athena sont facturés à l'exécution ou au volume. MWAA a un coût récurrent: l'environnement est facturé à l'heure tant qu'il existe, même quand aucun DAG ne tourne.</li></ul></div>
-  <div class="card"><h4>Lakehouse ouvert</h4><ul><li>S3 et Apache Iceberg en couches Bronze, Silver, Gold.</li><li>Iceberg est le format fédérateur, lisible par plusieurs moteurs.</li><li>Pas d'entrepôt de données dédié, Athena interroge les tables.</li></ul></div>
-  <div class="card"><h4>Deux natures de transformation</h4><ul><li>Technique (nettoyage, typage, mise en forme du Silver) en Python: Lambda, conteneurs Fargate, Glue Spark.</li><li>Métier (Gold, indicateurs, produits de données) en SQL dans dbt.</li></ul></div>
-  <div class="card"><h4>Airflow orchestre, ne calcule pas</h4><ul><li>MWAA lance les synchronisations, les conteneurs, Glue Spark et le job dbt Cloud.</li><li>Le calcul est poussé vers les moteurs. Dépendances et rejeu restent visibles dans les DAG.</li></ul></div>
-  <div class="card"><h4>Réversibilité préparée</h4><ul><li>Pas uniquement des outils AWS: Airbyte, dbt, Metabase, DataHub, Iceberg.</li><li>Chaque ADR décrit sa voie de sortie.</li></ul></div>
-  <div class="card"><h4>FinOps dès la conception</h4><ul><li>Chaque choix est relié à son coût.</li><li>Tags obligatoires, budgets avec alerte, estimation des coûts dans chaque pull request.</li></ul></div>
-  <div class="card"><h4>Qualité contrôlée à chaque couche</h4><ul><li>Contrôles techniques dès l'ingestion et dans le Silver, tests et contrats dbt sur le Gold.</li><li>Les tests dbt sont visibles dans dbt docs et DataHub. Les contrôles Python sont suivis via les exécutions des pipelines (section 7.3). Le sponsor de chaque domaine fixe la qualité attendue.</li></ul></div>
-  <div class="card"><h4>Organisation par domaines (Data Mesh)</h4><ul><li>Approche inspirée du Data Mesh, en modèle Hub &amp; Spoke: trois domaines métier et un domaine transverse Plateforme et IA, un socle et des standards communs.</li><li>Chaque domaine est propriétaire de ses produits de données en Gold. Ce découpage se retrouve dans le lakehouse, les pipelines, les droits et le catalogue.</li></ul></div>
-  <div class="card" style="grid-column:1/-1"><h4>DataOps: tout est du code</h4><ul><li>Toute l'infrastructure est décrite en Terraform. Le code, les DAG et les images sont déployés par GitHub Actions.</li><li>Chaque pull request passe par Checkov, la détection de secrets, Infracost et une CI dbt ciblée, puis par la revue des responsables du domaine.</li></ul></div>
-</div>
-<div class="flegend"><b>Couleurs des schémas, par famille d'outils:</b> <span style="--c:var(--stream);--cs:var(--stream-soft)">Ingestion</span><span style="--c:var(--accent);--cs:var(--accent-soft)">Stockage et catalogue</span><span style="--c:var(--batch);--cs:var(--batch-soft)">Calcul et transformation</span><span style="--c:var(--gov);--cs:var(--gov-soft)">Orchestration et supervision</span><span style="--c:var(--gd);--cs:var(--gd-soft)">Sécurité et réseau</span></div>
-
-<!-- ============================================================ -->
-<h2 id="vue">2. Vue d'ensemble</h2>
+<h2 id="contexte">1. Contexte, objectifs et périmètre</h2>
+<p>Artify est une plateforme de streaming vidéo. La plateforme data rassemble les événements du lecteur, les logs de diffusion, les données applicatives et les sources de paiement et de relation client. Elle sert le suivi des directs, la consolidation des revenus et les produits de données des domaines.</p>
+<h3>1.1 Besoins et contraintes</h3><ul><li>Suivre l’audience, les achats à la séance et les erreurs de lecture pendant la journée.</li><li>Construire des données de référence à partir de sources hétérogènes, avec contrôle de qualité, traçabilité et gestion des données personnelles.</li><li>Fournir un socle exploitable par une petite équipe dans un budget cible d’environ 5 000 € par mois hors salaires.</li></ul>
+<h3>1.2 Contribution et organisation</h3><p>En tant que Lead Data Architect, j’ai défini la roadmap, cadré les besoins et les choix techniques, puis conçu et déployé le socle AWS. Mon périmètre couvre les arbitrages d’architecture, les standards DataOps et de gouvernance, le suivi FinOps et la documentation ADR, DAT et HLD/LLD. J’accompagne les ingénieurs dans leur mise en œuvre.</p><p>Le travail associe l’architecte data, un Data Engineer et trois Analytics Engineers rattachés aux domaines, avec leurs sponsors métier. Les Analytics Engineers portent les modèles et indicateurs de leurs domaines dans le cadre commun de la plateforme.</p>
+<h3>1.3 Périmètre décrit en novembre 2026</h3><div class="wrap"><table><thead><tr><th>Statut</th><th>Périmètre</th></tr></thead><tbody>
+<tr><td>En exploitation</td><td>Lakehouse, collecte tracking et CDN, traitements batch, modèles Gold, restitution Metabase, catalogue, supervision et déploiements. Une application ML consomme les données Gold.</td></tr>
+<tr><td>Objectifs de service</td><td>Fraîcheur, disponibilité et reprise décrites aux sections 2 et 10. Les montants du budget sont des estimations.</td></tr>
+<tr><td>Travaux cadrés et expérimentation</td><td>Autres usages de recommandation, prévision, GenAI et agents. POC de lecture dégradée du Gold sur GCP, présenté à la section 10.</td></tr></tbody></table></div>
+<p>Le HLD présente les composants, les flux et les responsabilités. Le DAT développe les décisions, les LLD décrivent les configurations et procédures détaillées.</p>
+<h2 id="vue">2. Vue d’ensemble et objectifs de service</h2>
 <p>Les deux chemins partagent le même stockage (S3 et Iceberg), le même catalogue (Glue Data Catalog), les mêmes droits (Lake Formation) et la même restitution (Athena puis Metabase). Ils diffèrent par leur déclencheur et leur fraîcheur.</p>
 <div class="wrap"><table>
 <thead><tr><th>Critère</th><th>Streaming</th><th>Batch</th></tr></thead>
 <tbody>
 <tr><td>Déclencheur</td><td>Arrivée des événements (transformation par lots dans la Lambda appelée par Firehose, et collecte planifiée chaque minute pour les logs du CDN)</td><td>Planification et dépendances dans Airflow (MWAA)</td></tr>
-<tr><td>Fraîcheur</td><td>Quelques minutes (tampon Firehose d'une à cinq minutes)</td><td>Quotidienne, Objectif de disponibilité du Gold avant 7 h</td></tr>
+<tr><td>Fraîcheur</td><td>Quelques minutes, objectif de bout en bout</td><td>Quotidienne, objectif avant 7 h</td></tr>
 <tr><td>Sources</td><td>Événements du lecteur vidéo et de l'application, logs du CDN</td><td>MongoDB Atlas, HubSpot, Stripe, PayPal, SendGrid (emailing), réseaux sociaux, BigQuery, Hotjar, fichiers FTP, factures et coûts (export des coûts AWS, factures des services externes), logs du CDN</td></tr>
 <tr><td>Transformation</td><td>Lambda appelée par Firehose pour le tracking, Lambda planifiée pour les logs CDN</td><td>Silver en Python (Fargate, Glue Spark), Gold en SQL (dbt Cloud)</td></tr>
 <tr><td>Usages</td><td>Audience du jour, alertes de qualité de lecture, revenus Pay-Per-View du jour estimés</td><td>Tableaux de bord, produits de données, applications ML, reporting</td></tr>
 <tr><td>Nature du chiffre</td><td>Provisoire, libellé comme tel</td><td>Consolidé, chiffre de référence</td></tr>
 </tbody></table></div>
 
-<h3>2.1 Comment les deux chemins se rejoignent (architecture de type Lambda)</h3>
-<p>Le patron d'architecture de type Lambda répond à un besoin simple: voir un indicateur « aujourd'hui » sans attendre le lendemain, tout en gardant un seul chiffre de référence. Pour un même indicateur, deux chemins coexistent et une couche de lecture les réunit.</p>
-<div class="wrap"><table>
-<thead><tr><th>Rôle</th><th>Chemin rapide</th><th>Chemin en lots</th><th>Couche de lecture</th></tr></thead>
-<tbody>
-<tr><td>Période couverte</td><td>Périodes récentes non consolidées</td><td>Périodes effectivement consolidées</td><td>Les deux, dans un même tableau de bord</td></tr>
-<tr><td>Source</td><td>Silver du tracking, partitions non encore consolidées</td><td>Gold, recalculé chaque nuit</td><td>Vue Athena qui réunit les deux</td></tr>
-<tr><td>Fraîcheur</td><td>Quelques minutes</td><td>Quotidienne, objectif avant 7 h</td><td>Celle de chaque chemin</td></tr>
-<tr><td>Calcul</td><td>Agrégation simple des événements reçus</td><td>Modèles dbt avec tests et contrats</td><td>La vue Athena réunit les données provisoires du jour et les données consolidées du Gold pour le suivi dans Metabase.</td></tr>
-<tr><td>Nature du chiffre</td><td>Provisoire, libellé comme tel</td><td>Consolidé, chiffre de référence</td><td>Chaque point garde la nature de son chemin</td></tr>
-<tr><td>Lu par</td><td colspan="3">Metabase, à travers la vue Athena. Les utilisateurs n'ont pas d'accès direct au Silver.</td></tr>
-</tbody></table></div>
+<h3>2.1 Réunion du provisoire et du consolidé</h3>
 <div class="figure" role="img" aria-label="Schéma de la couche de lecture">
 <div class="wrap" style="margin:0">
 <svg viewBox="0 0 1000 340" xmlns="http://www.w3.org/2000/svg">
@@ -286,20 +253,9 @@ svg .head-w{fill:var(--warn)}
   <text x="828" y="308" class="sm" style="font-size:12px;fill:var(--batch)">avant: consolidé</text>
 </svg>
 </div>
-<p class="cap">En haut, le chemin rapide donne le chiffre du jour en quelques minutes. En bas, le chemin en lots recalcule chaque nuit le chiffre consolidé. La vue Athena réunit les deux, et Metabase les affiche dans un même tableau de bord: le dernier point, en pointillé orange, est provisoire jusqu'au recalcul de la nuit. Le lendemain, le recalcul nocturne (flèche grise) intègre le Silver de la veille dans le Gold, avec les retards repris sur 24 heures, et le chiffre consolidé remplace le provisoire.</p>
+<p class="cap">La vue Athena réunit les périodes récentes du Silver et les périodes consolidées du Gold pour leur restitution dans Metabase.</p>
 </div>
-<p><b>Règles de lecture.</b></p>
-<ul>
-  <li>Le chiffre récent reste provisoire jusqu’à la réussite de sa consolidation. Le remplacement intervient après réussite de la consolidation de la période concernée.</li>
-  <li>La reprise courante couvre les événements en retard sur 24 heures. Les retards hors fenêtre nécessitent un recalcul ciblé. La date d’ingestion est distincte de la date de l’événement. Le fuseau métier et les règles temporelles sont définis dans le LLD.</li>
-  <li>Seul le chiffre consolidé sert au reporting et à la finance. L'estimation des revenus Pay-Per-View du jour n'est jamais utilisée en comptabilité.</li>
-  <li>Pour la qualité de lecture, les deux chemins ne donnent pas le même chiffre à deux fraîcheurs. Le lecteur signale les symptômes en minutes. Les logs CDN alimentent aussi des alertes pendant les directs, puis une analyse consolidée à J+1 qui aide au diagnostic.</li>
-</ul>
-<p>Les trois usages servis (audience du jour, qualité de lecture, revenus Pay-Per-View du jour) sont détaillés en section 4.5.</p>
-<div class="callout">Version légère et assumée: la couche de lecture est une vue, pas un moteur dédié. Aucun Kafka, aucune brique supplémentaire. Une architecture Kappa, qui ferait tout passer par un flux rejouable, a été écartée: le rejeu passe par les DAG et le recalcul nocturne, bien moins cher. Le nom du patron (architecture de type Lambda) n'a rien à voir avec la fonction AWS Lambda, simple composant du chemin rapide.</div>
-
-<p>La vue Athena couvre les périodes récentes encore provisoires et les périodes consolidées du Gold. La frontière suit la dernière période publiée avec succès. Le provisoire de la veille reste disponible jusqu’à cette publication, y compris après minuit. En cas d’échec du batch, il est conservé avec sa date de mise à jour et un statut de retard de consolidation. Les définitions des indicateurs relèvent de l’Analytics Engineer et du référent métier.</p>
-<h3>2.2 Exigences non fonctionnelles</h3>
+<ul><li>La bascule suit la dernière période consolidée avec succès. Le provisoire de la veille reste visible après minuit jusqu’à la publication du Gold. En cas d’échec, sa date de mise à jour et le retard de consolidation sont affichés.</li><li>La reprise courante couvre 24 heures de retard. Au-delà, un recalcul ciblé est nécessaire. Date de l’événement, date d’ingestion et fuseau métier sont distingués.</li><li>Le consolidé sert au reporting financier. Les règles des indicateurs sont définies par l’Analytics Engineer et le référent métier. Les observations du player et du CDN contribuent ensemble au diagnostic.</li></ul><h3>2.2 Exigences non fonctionnelles</h3>
 <div class="wrap"><table>
 <thead><tr><th>Exigence</th><th>Cible</th><th>Comment elle est tenue</th></tr></thead>
 <tbody>
@@ -307,17 +263,26 @@ svg .head-w{fill:var(--warn)}
 <tr><td>Alertes pendant un direct</td><td>Pendant le direct, pas le lendemain</td><td>Métriques CloudWatch, alarmes, SNS vers e-mail ou Teams, SMS pour les cas critiques.</td></tr>
 <tr><td>Données de référence</td><td>Objectif de disponibilité du Gold avant 7 h</td><td>Chaîne nocturne orchestrée par Airflow, contrôle de fraîcheur des sources, alerte en cas d'échec.</td></tr>
 <tr><td>Événements en retard</td><td>Repris dans une fenêtre de 24 h</td><td>Le recalcul nocturne intègre les retards, le chiffre consolidé remplace le provisoire.</td></tr>
-<tr><td>Logs du CDN</td><td>Le lendemain (J+1)</td><td>Glue Spark une fois par jour.</td></tr>
-<tr><td>Remise en service</td><td>Voir les objectifs en section 11.1</td><td>Tâches rejouables, copie d'origine des événements, anciennes versions S3 et snapshots Iceberg, infrastructure reconstruite par Terraform (section 11).</td></tr>
-<tr><td>Coût</td><td>Environ 5 k€ par mois pour les outils, hors salaires</td><td>Services facturés à l'usage, budgets avec alerte, revue mensuelle (section 12).</td></tr>
+<tr><td>Logs du CDN</td><td>Collecte chaque minute, consolidation à J+1</td><td>Glue Spark une fois par jour.</td></tr>
+<tr><td>Remise en service</td><td>Voir les objectifs en section 10.2</td><td>Tâches rejouables, copie d'origine des événements, anciennes versions S3 et snapshots Iceberg, infrastructure reconstruite par Terraform (section 10).</td></tr>
+<tr><td>Coût</td><td>Environ 5 k€ par mois pour les outils, hors salaires</td><td>Services facturés à l'usage, budgets avec alerte, revue mensuelle (section 11).</td></tr>
 <tr><td>Sécurité et conformité</td><td>RGPD, droit à l'oubli, moindre privilège</td><td>Lake Formation, KMS, CloudTrail, DAG mensuel de droit à l'oubli (section 8).</td></tr>
 </tbody></table></div>
 
 <!-- ============================================================ -->
-<h2 id="lakehouse">3. Architecture data: lakehouse serverless en médaillon</h2>
+<h3>2.3 Hypothèses de dimensionnement</h3><p>Les logs CDN représentent une estimation de 15 à 30 Go bruts non compressés par jour. La collecte est planifiée chaque minute et les traitements de référence sont quotidiens. Les pointes de charge et les coûts sont suivis à partir des métriques d’exploitation, avec un budget mensuel détaillé à la section 11.</p>
+<h2 id="principes">3. Principes et principaux choix</h2><div class="grid2">
+<div class="card"><h4>Services managés</h4><p>Limiter la charge d’administration pour une petite équipe. MWAA porte un coût récurrent, les moteurs de traitement sont dimensionnés selon les usages.</p></div>
+<div class="card"><h4>Lakehouse ouvert</h4><p>S3 et Iceberg séparent stockage et calcul. Athena exécute les requêtes, avec une organisation Bronze, Silver et Gold.</p></div>
+<div class="card"><h4>Responsabilités de traitement</h4><p>MWAA orchestre. Python prépare le Silver dans Lambda, Fargate et Glue Spark. dbt pilote le SQL métier du Gold exécuté par Athena.</p></div>
+<div class="card"><h4>Produits par domaine</h4><p>Trois domaines métier et un hub transverse partagent les standards. Chaque produit Gold possède un propriétaire et un contrat.</p></div>
+<div class="card"><h4>Qualité et DataOps</h4><p>Contrôles à chaque couche, tests dbt, infrastructure Terraform et déploiements GitHub Actions. Les changements passent par la revue de code.</p></div>
+<div class="card"><h4>Coûts et réversibilité</h4><p>Budget cible de 5 000 € par mois hors salaires, suivi mensuel et arbitrages documentés. Les formats ouverts préparent les évolutions de moteur.</p></div></div>
+<p>Les alternatives, compromis et voies de sortie sont regroupés dans <a href="#choix">l’annexe A des décisions d’architecture</a>.</p>
+<h2 id="lakehouse">4. Lakehouse et organisation par domaines</h2>
 <p>Toute la plateforme repose sur un lakehouse: les données sont stockées dans S3, organisées en tables Apache Iceberg dans les trois couches. Les copies natives et les rejets Firehose restent des objets S3 avec un cycle de vie distinct (section 8). Les tables sont décrites dans le Glue Data Catalog et interrogées par Athena. Il n'y a ni entrepôt de données dédié ni cluster permanent. Le stockage et le calcul sont séparés. Athena, Glue Spark et Fargate sont facturés à l'exécution, alors que MWAA, l'orchestrateur, a un coût récurrent.</p>
 
-<h3>3.1 Schéma des trois couches</h3>
+<h3>4.1 Schéma des trois couches</h3>
 <div class="figure" role="img" aria-label="Schéma du lakehouse en médaillon">
 <div class="wrap" style="margin:0">
 <svg viewBox="0 0 1000 688" xmlns="http://www.w3.org/2000/svg">
@@ -379,7 +344,7 @@ svg .head-w{fill:var(--warn)}
 <p class="cap">Chaque couche a un rôle, un outil d'écriture et un public. La transformation technique est en Python jusqu'au Silver, la transformation métier est en SQL: dbt Cloud pilote les modèles et Athena les exécute pour construire le Gold. Seul le Gold est ouvert aux usages, avec une exception: la vue Athena du suivi du jour réunit le Silver récent du tracking et le Gold historique. Les utilisateurs passent par cette vue, sans accès direct au Silver.</p>
 </div>
 
-<h3>3.2 Rôle de chaque couche</h3>
+<h3>4.2 Rôle de chaque couche</h3>
 <div class="wrap"><table>
 <thead><tr><th>Couche</th><th>Contenu</th><th>Écrite par</th><th>Lue par</th><th>Règle</th></tr></thead>
 <tbody>
@@ -388,7 +353,7 @@ svg .head-w{fill:var(--warn)}
 <tr><td>Gold</td><td>Les modèles métier: tables de faits et de dimensions, indicateurs, produits de données de chaque domaine.</td><td>dbt Cloud, exécuté par Athena</td><td>Metabase, les applications ML, les autres domaines, par Athena</td><td>Couche de référence, avec contrats de structure et tests de qualité. Un domaine consomme le Gold des autres, jamais leur Silver.</td></tr>
 </tbody></table></div>
 
-<h3>3.3 Le Gold organisé par domaines (Data Mesh)</h3>
+<h3>4.3 Le Gold organisé par domaines (Data Mesh)</h3>
 <p>Le Gold n'est pas un bloc unique. Il est découpé en trois domaines métier et un domaine transverse Plateforme et IA, dans une approche inspirée du Data Mesh, en modèle Hub &amp; Spoke. L'objectif est de rapprocher chaque donnée des personnes qui en comprennent le sens métier, et d'éviter qu'une équipe centrale devienne un goulot d'étranglement. Bronze et Silver restent communs, gérés par le hub.</p>
 <div class="figure" role="img" aria-label="Schéma de l'organisation par domaines">
 <div class="wrap" style="margin:0">
@@ -455,25 +420,13 @@ svg .head-w{fill:var(--warn)}
 </tbody></table></div>
 <p>Un produit de données expose une ou plusieurs tables Gold accompagnées de quatre éléments: un contrat de structure dans dbt, un propriétaire métier, une documentation publiée dans dbt docs et DataHub, et un engagement de fraîcheur (quotidien avant 7 h pour la plupart, mensuel pour le partage des revenus). Le sponsor valide le contrat logique (le besoin, les définitions, la fraîcheur attendue). L'Analytics Engineer du domaine le traduit en contrat physique (le modèle SQL et son contrat dbt).</p>
 
-<h3>3.4 Pourquoi un lakehouse serverless</h3>
-<div class="wrap"><table>
-<thead><tr><th>Choix</th><th>Ce qu'il apporte</th><th>Alternative écartée</th></tr></thead>
-<tbody>
-<tr><td>S3 et Athena, sans entrepôt</td><td>Stockage sans limite et calcul à la demande. Athena estimé à 210 € par mois dans le budget de référence. La comparaison avec un entrepôt provisionné nécessite des hypothèses communes de charge et de disponibilité.</td><td>Redshift provisionné, Snowflake, Databricks</td></tr>
-<tr><td>Apache Iceberg</td><td>Mises à jour et suppressions sur S3, évolution de schéma, partitionnement caché, anciennes versions des tables, compaction. Format ouvert, lisible par Spark, Snowflake, Databricks ou BigQuery.</td><td>Fichiers Parquet seuls, format propre à un éditeur</td></tr>
-<tr><td>Trois couches en médaillon</td><td>Une responsabilité par couche, un rejeu possible depuis le Bronze, une seule couche exposée aux métiers (sauf la vue du suivi du jour, qui lit aussi le Silver récent du tracking).</td><td>Tables construites directement depuis les sources</td></tr>
-<tr><td>Gold organisé en trois domaines métier et un domaine transverse (ADR-013)</td><td>Une responsabilité métier claire par domaine, un socle et des standards partagés, sans multiplier les équipes.</td><td>Plateforme entièrement centralisée (l'équipe data devient un goulot d'étranglement), Data Mesh à huit domaines autonomes (trop fragmenté pour une petite équipe)</td></tr>
-<tr><td>Serverless et managé</td><td>Aucun cluster à administrer pour les pipelines de production: Firehose, Lambda, Fargate, Glue Spark, Athena, MWAA.</td><td>Serveurs EC2, cluster EMR, Kubernetes</td></tr>
-</tbody></table></div>
-<p>Les deux chemins décrits ensuite, streaming et batch, alimentent ce même lakehouse. Ils ne diffèrent que par leur déclencheur et leur fraîcheur.</p>
+<h3>4.4 Exemple de produit de données</h3><div class="wrap"><table><tbody><tr><th>Produit</th><td>Qualité de diffusion</td></tr><tr><th>Domaine et propriétaire</th><td>Usage, direction produit et éditorial</td></tr><tr><th>Usage</th><td>Suivre la qualité de diffusion et contribuer au diagnostic des incidents.</td></tr><tr><th>Données</th><td>Logs CDN préparés dans le Silver, puis modèles Gold d’indicateurs calculés avec dbt. Les noms physiques sont décrits dans le catalogue.</td></tr><tr><th>Publication</th><td>Lecture via Athena et restitution Metabase. Objectif de consolidation quotidienne avant 7 h.</td></tr><tr><th>Contrat et qualité</th><td>Structure et tests dbt, documentation et lignage dans DataHub, définitions validées avec le référent métier.</td></tr></tbody></table></div>
+<h2 id="streaming">5. Collecte et suivi en quasi temps réel</h2>
 
-<!-- ============================================================ -->
-<h2 id="streaming">4. Partie streaming</h2>
-
-<h3>4.1 Besoin</h3>
+<h3>5.1 Besoin</h3>
 <p>Le produit et l'éditorial suivent une sortie ou un direct pendant la journée, sans attendre le lendemain. L'équipe technique détecte une dégradation de la diffusion (coupures, erreurs de lecture) en minutes. Le besoin se compte en minutes, pas à la seconde: c'est ce qui permet une solution sans Kafka.</p>
 
-<h3>4.2 Schéma d'architecture</h3>
+<h3>5.2 Schéma d'architecture</h3>
 <p><b>Événements du player (audience du jour, revenus Pay-Per-View, erreurs de lecture)</b></p>
 <div class="figure" role="group" aria-label="Schéma du chemin des événements du lecteur vidéo">
 <div class="wrap" style="margin:0">
@@ -574,7 +527,7 @@ svg .head-w{fill:var(--warn)}
   <path d="M792,1089.0 L818,1089.0" class="ar-s" marker-end="url(#pl-s)"/>
 </svg>
 </div>
-<p class="cap">Traits orange: chemin en continu. La copie d'origine et le dossier errors/ forment le Bronze, le Silver du tracking est produit par la transformation de la Lambda. Le DAG de rejeu relit errors/ après correction. La vue Athena réunit le Silver récent non consolidé et le Gold passé (section 2.1). Le Gold consolidé est recalculé chaque nuit.</p>
+<p class="cap">Le flux tracking alimente le Silver récent et les supports S3 de sauvegarde et de rejet. La restitution applique la règle de consolidation décrite à la section 2.1.</p>
 </div>
 <p><b>Logs de BunnyCDN (qualité de diffusion)</b></p>
 <div class="figure" role="group" aria-label="Schéma du chemin des logs de BunnyCDN">
@@ -667,10 +620,10 @@ svg .head-w{fill:var(--warn)}
   <path d="M692,1153.0 L718,1153.0" class="ar-s" marker-end="url(#cd-s)"/>
 </svg>
 </div>
-<p class="cap">EventBridge Scheduler déclenche chaque minute une Lambda, qui interroge l'API de BunnyCDN, retrouve les logs en retard grâce à un point de reprise DynamoDB, type les colonnes, protège les adresses IP, alerte pendant un direct et écrit ses données dans une table Iceberg du Bronze. Chaque jour, après détection des nouvelles données, Airflow lance Glue Spark, qui écrit le Silver Iceberg. dbt Cloud calcule ensuite les indicateurs de qualité de diffusion dans le Gold.</p>
+<p class="cap">La collecte CDN alimente le Bronze Iceberg et les alertes de direct. Sa consolidation quotidienne est décrite dans le flux batch.</p>
 </div>
 
-<h3>4.3 Composants</h3>
+<h3>5.3 Composants</h3>
 <div class="fgroup" id="t43">
 <div class="fam-tabs" role="radiogroup" aria-label="Composants">
 <button type="button" class="chk" data-fam="all" aria-pressed="false" style="--c:var(--accent)">Tout afficher</button>
@@ -687,31 +640,19 @@ svg .head-w{fill:var(--warn)}
 <div class="wrap"><table>
 <thead><tr><th>Composant</th><th>Rôle</th></tr></thead>
 <tbody>
-<tr data-fam="c1"><td>Lecteur vidéo et application</td><td>Producteurs. Ils envoient les événements de lecture (démarrage, progression, micro-coupures, erreurs) et l'événement « achat Pay-Per-View confirmé » vers le même flux.</td></tr>
-<tr data-fam="c2"><td>Amazon Data Firehose</td><td>Un seul flux, sans shard à dimensionner, qui s'adapte à la charge dans la limite des quotas. Buffering configurable, écriture dans la destination Iceberg avec partitionnement par jour. La date d’ingestion est conservée séparément de la date de l’événement. Firehose seul, sans Kinesis Data Streams.</td></tr>
-<tr data-fam="c3"><td>AWS Lambda de transformation</td><td>Appelée par Firehose sur chaque lot. Elle porte les transformations techniques du tracking (mise en forme, typage, contrôles), produit ainsi le Silver du tracking, compte les erreurs de lecture et publie une métrique CloudWatch. Les reprises peuvent compter à nouveau certains événements, ce qui doit être pris en compte dans les seuils. Un enregistrement invalide est renvoyé en échec.</td></tr>
-<tr data-fam="c4"><td>S3, Silver du tracking</td><td>Destination des enregistrements transformés, partitionnée par jour et lue par Athena.</td></tr>
-<tr data-fam="c5"><td>S3, copie d'origine et préfixe errors/</td><td>La copie native des enregistrements reçus est conservée sous forme d’objets S3 et permet le rejeu. Elle n’est pas automatiquement une table Iceberg. Les échecs de transformation sont déposés sous errors/ et rejoués par un DAG Airflow après correction.</td></tr>
+<tr data-fam="c1"><td>Lecteur vidéo et application</td><td>Le player produit les événements de lecture via l’API authentifiée. Le backend valide les événements et émet les achats confirmés après confirmation du paiement.</td></tr>
+<tr data-fam="c2"><td>Amazon Data Firehose</td><td>Regroupe les événements, appelle Lambda et livre les résultats au Silver Iceberg. Conserve la copie native et les rejets dans S3.</td></tr>
+<tr data-fam="c3"><td>AWS Lambda de transformation</td><td>Mise en forme, typage et contrôles du tracking. Publie les métriques d’erreurs et signale les enregistrements invalides.</td></tr>
+<tr data-fam="c4"><td>S3, Silver du tracking</td><td>Table Iceberg de suivi récent. Dédoublonnage nocturne par Glue Spark.</td></tr>
+<tr data-fam="c5"><td>S3, copie d'origine et préfixe errors/</td><td>Objets S3 pour la sauvegarde et le rejeu. Les rejets sont supprimés après retraitement réussi.</td></tr>
 <tr data-fam="c6"><td>CloudWatch et SNS</td><td>Alarme au-delà d'un seuil d'erreurs de lecture. SNS notifie l’équipe technique par e-mail ou via une intégration vers Teams, et par SMS pour les cas critiques.</td></tr>
-<tr data-fam="c7"><td>Lambda de collecte des logs du CDN (chaque minute)</td><td>EventBridge Scheduler la déclenche chaque minute. Elle interroge l’API Logging v2 de BunnyCDN, parcourt les pages de résultats et utilise un point de reprise dans DynamoDB pour récupérer les logs arrivés en retard. Elle type les colonnes, protège les adresses IP et écrit les logs dans une table Iceberg du Bronze, que le job Spark quotidien lit (section 5). Ses alertes passent par SNS, pendant un direct.</td></tr>
-<tr data-fam="c8"><td>Athena et Metabase</td><td>Une vue Athena réunit le Gold des périodes consolidées et les données du jour, Metabase l'affiche dans un même tableau de bord, les périodes récentes restant provisoires jusqu’à leur consolidation réussie.</td></tr>
+<tr data-fam="c7"><td>Lambda de collecte des logs du CDN (chaque minute)</td><td>Collecte API Logging v2 déclenchée par EventBridge Scheduler. Écrit le Bronze Iceberg, gère le point de reprise DynamoDB et émet les alertes pendant les directs.</td></tr>
+<tr data-fam="c8"><td>Athena et Metabase</td><td>Vue de lecture du provisoire et du consolidé selon la règle de la section 2.1.</td></tr>
 </tbody></table></div>
 </div>
 
-<h3>4.4 Flux de données</h3>
-<ol class="steps">
-  <li>Le lecteur vidéo transmet ses événements à l’API authentifiée de l’application. Le backend les valide et les envoie à Firehose par lots, avec les achats confirmés côté serveur.</li>
-  <li>Firehose regroupe les événements et appelle la Lambda par lots. Les paramètres de buffering et de livraison contribuent à l’objectif de fraîcheur de bout en bout.</li>
-  <li>La Lambda met en forme et contrôle chaque enregistrement, compte les erreurs de lecture et publie la métrique CloudWatch.</li>
-  <li>Firehose écrit les enregistrements valides dans une table Iceberg (Silver du tracking, partitions non encore consolidées), conserve une copie native des enregistrements d’origine dans S3, hors table Iceberg et dépose les échecs de transformation sous errors/.</li>
-  <li>Athena lit la partition du jour à travers une vue qui la réunit au Gold des périodes consolidées. Metabase affiche l'audience du jour et les revenus Pay-Per-View estimés.</li>
-  <li>Si le nombre d'erreurs dépasse le seuil, l'alarme CloudWatch déclenche une notification SNS.</li>
-  <li>Les événements du lecteur vidéo sont dédoublonnés dans le Silver par un job Glue Spark lancé par Airflow lors du batch nocturne, avant le calcul du Gold. Chaque nuit, le batch recalcule les périodes à consolider. Après réussite des contrôles, le Gold remplace leur provisoire. En cas d’échec, le provisoire reste disponible avec un statut de retard.</li>
-</ol>
-<p>Les logs du CDN suivent un autre chemin: EventBridge Scheduler déclenche chaque minute la Lambda de collecte, qui interroge l’API de BunnyCDN et écrit les logs dans une table Iceberg du Bronze (section 4.3).</p>
-
-<p>Le lecteur envoie ses événements à l’API authentifiée de l’application. Le backend vérifie la session, valide les champs, limite les abus et transmet les événements à Firehose. La confirmation d’achat Pay-Per-View est émise par le backend après confirmation du paiement. Pour le CDN, la Lambda écrit les logs dans le Bronze Iceberg et avance le point de reprise après validation de l’écriture. Les reprises et les chevauchements d’exécution sont gérés par la collecte, avec dédoublonnage ultérieur dans le Silver. Les détails d’écriture et de coordination sont décrits dans le LLD.</p>
-<h3>4.5 Usages servis</h3>
+<h3>5.4 Flux de données</h3>
+<ol><li>L’API authentifiée vérifie la session, valide les événements, limite les abus et transmet les lots à Firehose. Les achats confirmés sont émis côté backend.</li><li>Firehose appelle Lambda pour transformer les lots, reçoit les résultats puis livre les enregistrements valides dans le Silver Iceberg. La copie native et les rejets sont conservés dans S3.</li><li>La vue Athena lit les partitions non consolidées et le Gold publié. Metabase restitue les indicateurs selon les règles de la section 2.1.</li><li>CloudWatch évalue les métriques d’erreurs et déclenche SNS selon les seuils. Les reprises sont prises en compte dans l’interprétation des compteurs.</li><li>Le dédoublonnage nocturne du tracking et la construction du Gold sont décrits dans le flux batch.</li></ol><p>Pour BunnyCDN, EventBridge Scheduler déclenche la Lambda chaque minute. Elle lit les pages de l’API, type les colonnes, protège les IP et écrit le Bronze Iceberg. Le point de reprise avance après validation de l’écriture. La collecte gère les reprises et chevauchements, puis le Silver dédoublonne les données. Les alertes de direct vont à SNS, la supervision technique à CloudWatch.</p><h3>5.5 Usages servis</h3>
 <div class="wrap"><table>
 <thead><tr><th>Usage</th><th>Chemin rapide (minutes)</th><th>Chemin en lots (référence)</th><th>Règle de lecture</th></tr></thead>
 <tbody>
@@ -722,12 +663,13 @@ svg .head-w{fill:var(--warn)}
 <p>Ces usages sont rattachés à un domaine propriétaire: l'audience du jour et la qualité de lecture au domaine Usage, les revenus Pay-Per-View au domaine Croissance. Le sponsor du domaine en valide la définition, et le chiffre consolidé est celui de son produit de données en Gold.</p>
 
 <!-- ============================================================ -->
-<h2 id="batch">5. Partie batch</h2>
 
-<h3>5.1 Besoin</h3>
+<h2 id="batch">6. Traitements batch et consolidation</h2>
+
+<h3>6.1 Besoin</h3>
 <p>Construire chaque jour les données de référence (Silver puis Gold) à partir de toutes les sources, pour les tableaux de bord, les produits de données de chaque domaine, le reporting et les applications ML. L’objectif de disponibilité du Gold est fixé avant 7 h.</p>
 
-<h3>5.2 Schéma d'architecture</h3>
+<h3>6.2 Schéma d'architecture</h3>
 <div class="figure" role="group" aria-label="Schéma du chemin batch">
 <div class="wrap" style="margin:0">
 <svg viewBox="0 0 1001 1375" xmlns="http://www.w3.org/2000/svg">
@@ -855,10 +797,10 @@ svg .head-w{fill:var(--warn)}
   </g>
 </svg>
 </div>
-<p class="cap">À lire de haut en bas, une colonne par famille de sources. Chaque source est d'abord ingérée et gardée telle quelle dans le Bronze, puis transformée en Python (nettoyage, typage, dédoublonnage) pour écrire le Silver. Pour les API, les fichiers, les réseaux sociaux et les factures externes, le même conteneur Fargate écrit la réponse brute dans une table Iceberg du Bronze, puis la relit pour écrire le Silver. dbt Cloud pilote ensuite le SQL métier, exécuté par Athena, pour écrire le Gold. L'Athena de la ligne Usages sert à interroger les données (Metabase, analyses). Le tracking n'apparaît pas ici: il suit le chemin streaming (section 4), et son Silver entre dans le Gold comme les autres. Traits verts: flux en lots. Les contrôles de qualité sont détaillés en section 6. DataHub fait partie du socle commun, avec Airflow, dont il récupère le lineage automatiquement, et le Glue Data Catalog (l'annuaire des tables, à ne pas confondre avec Glue Spark). Les logs du CDN sont déposés chaque minute dans S3 par la Lambda de collecte, déjà typés (section 4), et Spark les lit une fois par jour. Airflow lance chaque étape du batch.</p>
+<p class="cap">MWAA orchestre l’ingestion, les traitements Silver et le job dbt Cloud. Athena exécute le SQL de construction du Gold et les requêtes des usages. Le Silver tracking rejoint la consolidation après son dédoublonnage nocturne.</p>
 </div>
 
-<h3>5.3 Composants</h3>
+<h3>6.3 Composants</h3>
 <div class="fgroup" id="t53">
 <div class="fam-tabs" role="radiogroup" aria-label="Composants">
 <button type="button" class="chk" data-fam="all" aria-pressed="false" style="--c:var(--accent)">Tout afficher</button>
@@ -877,12 +819,12 @@ svg .head-w{fill:var(--warn)}
 <div class="wrap"><table>
 <thead><tr><th>Composant</th><th>Rôle</th></tr></thead>
 <tbody>
-<tr data-fam="c1"><td>Airflow managé (MWAA)</td><td>Orchestrateur unique de la production, en classe mw1.medium. Il lance les synchronisations Airbyte, les conteneurs Fargate, Glue Spark (après un capteur sur l'arrivée des nouvelles données), le job dbt Cloud et les DAG de rejeu. En développement, Airflow tourne sur EC2.</td></tr>
-<tr data-fam="c2"><td>Airbyte Cloud</td><td>Ingestion de MongoDB Atlas en CDC (insertions, mises à jour, suppressions) par synchronisations successives. Écrit le Bronze en table Iceberg, en ajout seul.</td></tr>
-<tr data-fam="c3"><td>Conteneurs Python sur ECS Fargate</td><td>Une image Docker par source (HubSpot, Stripe, PayPal, SendGrid, réseaux sociaux, BigQuery, Hotjar, FTP), construite par GitHub Actions et déposée dans ECR, avec son rôle IAM et son secret. Ils extraient les données, écrivent la réponse brute dans le Bronze (table Iceberg) et écrivent le Silver. Pour MongoDB, un conteneur construit le Silver à partir du Bronze Airbyte.</td></tr>
-<tr data-fam="c4"><td>Glue Spark</td><td>Traitement journalier des logs du CDN, en PySpark standard (sans les bibliothèques propres à Glue), en ne lisant que les nouvelles données: lecture des colonnes déjà typées, dédoublonnage, filtrage des robots et des requêtes techniques, rattachement de chaque URL au titre du catalogue et à une zone géographique, écriture partitionnée par jour dans Iceberg (ajout ou MERGE selon la table) et compaction. Le même moteur sert au recalcul de l'historique (réécriture des tables Iceberg) et à la préparation des données du catalogue.</td></tr>
-<tr data-fam="c5"><td>dbt Cloud (prod), dbt Core (dev)</td><td>Le SQL métier du Gold: modèles incrémentaux sur Iceberg, tests (unicité, nullité, relations), contrats de structure sur les modèles exposés, documentation. Un dossier de modèles par domaine. Un seul job lancé par Airflow, dbt calcule l'ordre des modèles.</td></tr>
-<tr data-fam="c6"><td>S3 et Apache Iceberg</td><td>Stockage des couches Bronze, Silver et Gold. Les données analytiques sont organisées en tables Iceberg, y compris les logs du CDN. Les copies et rejets natifs Firehose sont des objets S3 traités séparément pour la conservation et l’effacement. Iceberg apporte les mises à jour, les suppressions, l'évolution de schéma et les anciennes versions.</td></tr>
+<tr data-fam="c1"><td>Airflow managé (MWAA)</td><td>Orchestrateur de production en mw1.medium. Pilote les dépendances, suit les exécutions et permet les reprises. Airflow sur EC2 en développement.</td></tr>
+<tr data-fam="c2"><td>Airbyte Cloud</td><td>Capture les insertions, mises à jour et suppressions MongoDB Atlas dans le Bronze Iceberg avec métadonnées CDC.</td></tr>
+<tr data-fam="c3"><td>Conteneurs Python sur ECS Fargate</td><td>Connecteurs et transformations Silver par source. Chaque image possède son rôle IAM et son secret. Le conteneur MongoDB interprète les opérations CDC.</td></tr>
+<tr data-fam="c4"><td>Glue Spark</td><td>Préparation des logs CDN, dédoublonnage nocturne du tracking, préparation du catalogue, compaction et recalculs historiques.</td></tr>
+<tr data-fam="c5"><td>dbt Cloud (prod), dbt Core (dev)</td><td>Modèles SQL métier du Gold, contrats, tests et documentation. Un job de production lancé par MWAA, avec ordre d’exécution déterminé par dbt.</td></tr>
+<tr data-fam="c6"><td>S3 et Apache Iceberg</td><td>Stockage des couches analytiques et gestion des versions des tables. Les copies et rejets Firehose ont un cycle de vie S3 distinct.</td></tr>
 <tr data-fam="c7"><td>Glue Data Catalog et Athena</td><td>Le catalogue décrit les tables, Athena les interroge. Un groupe de travail par usage, avec limite de données lues.</td></tr>
 <tr data-fam="c8"><td>DataHub et dbt docs</td><td>Catalogue ouvert à tous et lineage. dbt est la source de vérité des définitions, DataHub les lit par son connecteur.</td></tr>
 <tr data-fam="c9"><td>Metabase (open source, sur Fargate)</td><td>Restitution: tableaux de bord par domaine, lus sur le Gold par Athena.</td></tr>
@@ -890,29 +832,28 @@ svg .head-w{fill:var(--warn)}
 </tbody></table></div>
 </div>
 
-<h3>5.4 Ingestion par source</h3>
+<h3>6.4 Ingestion par source</h3>
 <div class="wrap"><table>
 <thead><tr><th>Source</th><th>Connecteur</th><th>Bronze</th><th>Silver</th></tr></thead>
 <tbody>
 <tr><td>MongoDB Atlas</td><td>Airbyte Cloud, CDC</td><td>Table Iceberg, document complet en JSON avec métadonnées CDC</td><td>Conteneur Fargate (aplatir, typer, dédoublonner)</td></tr>
 <tr><td>HubSpot, Stripe, PayPal, SendGrid, réseaux sociaux, BigQuery, Hotjar, FTP</td><td>Conteneur Fargate, un par source</td><td>Table Iceberg, réponse brute de la source</td><td>Le même conteneur</td></tr>
 <tr><td>Factures et coûts</td><td>Export des coûts AWS (CUR) dans S3, factures des services externes (MongoDB Atlas, BunnyCDN, dbt Cloud, Airbyte Cloud, fournisseur LLM) par API</td><td>Table Iceberg, brut tel que reçu</td><td>Le même conteneur, puis le Gold par dbt (modèles de coûts, tableau de bord Metabase par domaine)</td></tr>
-<tr><td>Logs du CDN</td><td>Collecte chaque minute par API (section 4), qui écrit dans une table Iceberg</td><td>Table Iceberg, logs typés et adresses IP protégées</td><td>Glue Spark: lecture, dédoublonnage, filtrage, rattachement au titre et à la zone, écriture Iceberg et compaction</td></tr>
+<tr><td>Logs du CDN</td><td>Collecte chaque minute par API (section 5), qui écrit dans une table Iceberg</td><td>Table Iceberg, logs typés et adresses IP protégées</td><td>Glue Spark: lecture, dédoublonnage, filtrage, rattachement au titre et à la zone, écriture Iceberg et compaction</td></tr>
 <tr><td>Événements du lecteur et de l'application</td><td>Firehose (partie streaming)</td><td>Copie des enregistrements d'origine</td><td>Lambda de Firehose</td></tr>
 </tbody></table></div>
 
-<h3>5.5 Flux de données d'une journée</h3>
+<h3>6.5 Flux de données d'une journée</h3>
 <ol class="steps">
   <li>Airflow lance les synchronisations Airbyte de MongoDB Atlas, qui ajoutent au Bronze les changements depuis la dernière position lue.</li>
   <li>Airflow lance les conteneurs Fargate de chaque source. Ils extraient les nouvelles données, écrivent la réponse brute dans le Bronze (table Iceberg) et écrivent le Silver. Un conteneur dédié construit le Silver de MongoDB à partir du Bronze.</li>
-  <li>Après détection des nouvelles données des logs du CDN, écrites par la collecte (section 4), Airflow lance chaque jour Glue Spark, qui les lit, les dédoublonne, les filtre, les rattache au catalogue et à une zone, puis les écrit en Iceberg et compacte les tables. Le même moteur dédoublonne chaque nuit les événements du lecteur vidéo dans le Silver du tracking, avant le calcul du Gold.</li>
+  <li>Après détection des nouvelles données des logs du CDN, écrites par la collecte (section 5), Airflow lance chaque jour Glue Spark, qui les lit, les dédoublonne, les filtre, les rattache au catalogue et à une zone, puis les écrit en Iceberg et compacte les tables. Le même moteur dédoublonne chaque nuit les événements du lecteur vidéo dans le Silver du tracking, avant le calcul du Gold.</li>
   <li>Quand les Silver sont prêts, Airflow lance le job dbt Cloud. dbt envoie le SQL à Athena, qui construit le Gold de façon incrémentale. Le job de production lance <code>dbt build</code>: les tests de données sélectionnés sont exécutés selon les dépendances, après matérialisation des modèles concernés. Les échecs de sévérité bloquante font ignorer les modèles aval concernés.</li>
   <li>L’objectif de disponibilité du Gold est fixé avant 7 h. Metabase le lit par Athena, les applications ML lisent leurs features, DataHub et dbt docs publient les définitions et le lineage.</li>
   <li>Les tâches de maintenance (compaction et nettoyage des anciennes versions Iceberg) et le DAG mensuel du droit à l'oubli sont planifiés dans Airflow.</li>
 </ol>
 
-<p>Airbyte conserve dans le Bronze Iceberg les changements MongoDB et leurs métadonnées CDC. Fargate applique les insertions, mises à jour et suppressions au Silver selon les identifiants et l’ordre des changements. Les modèles Gold prennent en compte les suppressions, avec reconstruction complète pour les petites tables lorsque cela simplifie leur propagation. MWAA attend la réussite des Silver, déclenche le job dbt Cloud et suit son résultat. La période est déclarée consolidée après réussite des contrôles requis. Les versions, connecteurs, stratégies incrémentales et configurations de l’adaptateur Athena sont décrits dans le LLD.</p>
-<h3>5.6 Du besoin métier au produit de données</h3>
+<p>Les opérations CDC sont appliquées selon les identifiants et leur ordre. Les modèles Gold prennent en compte les suppressions, avec reconstruction complète pour les petites tables lorsque cela simplifie leur propagation. La période est consolidée après réussite des contrôles requis. Versions, connecteurs et stratégies d’écriture sont détaillés dans les LLD.</p><h3>6.6 Du besoin métier au produit de données</h3>
 <p>Le pipeline est commun, mais chaque produit de données du Gold appartient à un domaine. Sa création suit le même circuit.</p>
 <ol class="steps">
   <li>Le métier exprime son besoin par un ticket (usage, utilisateurs, fraîcheur attendue).</li>
@@ -924,7 +865,8 @@ svg .head-w{fill:var(--warn)}
 </ol>
 
 <!-- ============================================================ -->
-<h2 id="qualite">6. Qualité des données</h2>
+
+<h2 id="qualite">7. Qualité, catalogue et lignage</h2><h3>7.1 Contrôles par couche</h3>
 <p>La qualité n'est pas une étape à part: chaque couche a ses contrôles, et les résultats sont publiés au même endroit que les définitions.</p>
 <div class="figure" role="img" aria-label="Schéma des contrôles de qualité des données">
 <div class="wrap" style="margin:0">
@@ -1075,7 +1017,7 @@ svg .head-w{fill:var(--warn)}
 <p><b>Limite:</b> le Gold est la couche de référence avec contrats et tests, les modèles en aval sont protégés par <code>dbt build</code>, mais le modèle testé est déjà écrit au moment où son test échoue.</p>
 
 <!-- ============================================================ -->
-<h2 id="catalogue">7. Catalogue de données</h2>
+<h3 id="catalogue">7.2 Catalogue et documentation</h3>
 <p>Le catalogue répond à trois questions avant toute utilisation d'une donnée: qu'est-ce que c'est, à qui est-ce, d'où cela vient. Deux catalogues coexistent, avec des rôles distincts, et dbt reste la source de vérité des définitions.</p>
 <div class="wrap"><table>
 <thead><tr><th>Catalogue</th><th>Rôle</th><th>Contenu</th><th>Utilisé par</th></tr></thead>
@@ -1085,7 +1027,7 @@ svg .head-w{fill:var(--warn)}
 <tr><td>dbt docs</td><td>Documentation des modèles</td><td>Modèles, colonnes, tests et contrats, générés à chaque exécution.</td><td>Équipe data, Analytics Engineers des domaines</td></tr>
 </tbody></table></div>
 
-<h3>7.1 Comment DataHub est alimenté</h3>
+<h3>7.3 Alimentation de DataHub</h3>
 <p>Les connecteurs natifs sont lancés par un DAG Airflow. Ce qu'ils ne savent pas lire est déclaré dans Airflow ou émis par un petit script, revu en pull request.</p>
 <div class="wrap"><table>
 <thead><tr><th>Source de métadonnées</th><th>Ce que DataHub récupère</th></tr></thead>
@@ -1098,7 +1040,7 @@ svg .head-w{fill:var(--warn)}
 <tr><td>Streaming</td><td>Lineage du flux Firehose vers le stockage, émis par un script.</td></tr>
 </tbody></table></div>
 
-<h3>7.2 Le lineage, de la source au tableau de bord</h3>
+<h3>7.4 Lignage de la source aux usages</h3>
 <p>Le lineage montre d'où vient une donnée et ce qui l'utilise. Aucun outil ne le voit en entier: DataHub l'assemble à partir de plusieurs fournisseurs, chacun pour un tronçon du chemin.</p>
 <div class="figure" role="img" aria-label="Schéma du data lineage">
 <div class="wrap" style="margin:0">
@@ -1180,21 +1122,12 @@ svg .head-w{fill:var(--warn)}
 </div>
 <p class="cap">Le lineage est assemblé par tronçon. Chaque fournisseur décrit une partie du chemin, DataHub les raccorde.</p>
 </div>
-<div class="wrap"><table>
-<thead><tr><th>Tronçon</th><th>Exemple</th><th>Fourni par</th><th>Niveau de détail</th></tr></thead>
-<tbody>
-<tr><td>Source vers Bronze</td><td>Collection MongoDB vers sa table Bronze, API Stripe vers sa table Bronze</td><td>Airflow: entrées et sorties déclarées dans la tâche qui lance Airbyte ou le conteneur</td><td>Table</td></tr>
-<tr><td>Bronze vers Silver</td><td>Table Bronze vers table Silver, par un conteneur Fargate ou Glue Spark</td><td>Airflow: entrées et sorties déclarées dans le DAG</td><td>Table</td></tr>
-<tr><td>Silver vers Gold</td><td>Tables Silver vers modèles dbt, puis tables Gold</td><td>dbt, par son connecteur</td><td>Colonne</td></tr>
-<tr><td>Gold vers usages</td><td>Table Gold vers un tableau de bord Metabase</td><td>Metabase, par l'analyse de son SQL</td><td>Table</td></tr>
-<tr><td>Streaming</td><td>Flux Firehose vers le Silver du tracking</td><td>Un script</td><td>Table</td></tr>
-</tbody></table></div>
 <p>Les tronçons se raccordent par les mêmes tables du Glue Data Catalog. Le lineage sert à mesurer l'impact d'un changement et à remonter à l'origine d'un chiffre faux. <b>Limite:</b> le détail par colonne n'existe que dans dbt, entre le Silver et le Gold. Avant le Silver, le lineage s'arrête au niveau des tables.</p>
 
-<h3>7.3 La qualité visible dans le catalogue</h3>
+<h3>7.5 Résultats de qualité dans le catalogue</h3>
 <p>DataHub affiche les résultats des tests de qualité. Après chaque exécution, le connecteur dbt lit les résultats des tests et les rattache à la table testée. Chacun voit, sur la page d'un produit de données, si ses derniers tests sont passés, à côté de son propriétaire et de son lineage.</p>
 <div class="wrap"><table>
-<thead><tr><th>Contrôle (section 6)</th><th>Visible dans DataHub</th><th>Comment</th></tr></thead>
+<thead><tr><th>Contrôle (section 7.1)</th><th>Visible dans DataHub</th><th>Comment</th></tr></thead>
 <tbody>
 <tr><td>Tests dbt du Gold (unicité, nullité, relations, valeurs, cohérence métier)</td><td>Oui</td><td>Résultat de chaque test rattaché à sa table et à sa colonne, avec l'état de la dernière exécution.</td></tr>
 <tr><td>Contrats de structure</td><td>Indirectement</td><td>Une rupture de contrat fait échouer le modèle: l'échec apparaît dans l'exécution Airflow qui lance dbt, pas comme un test.</td></tr>
@@ -1203,7 +1136,7 @@ svg .head-w{fill:var(--warn)}
 </tbody></table></div>
 <p>Le détail de chaque test reste aussi dans dbt docs. L'alerte, elle, ne passe pas par DataHub: elle part d'Airflow ou de CloudWatch, puis de SNS.</p>
 
-<h3>7.4 Règles de catalogue</h3>
+<h3>7.6 Règles de documentation</h3>
 <ul>
 <li>Les définitions des modèles sont maintenues dans dbt et publiées dans DataHub. Les tableaux Metabase doivent rester alignés sur ces définitions. Aucune synchronisation automatique de leur documentation n’est présumée ici.</li>
 <li>Chaque produit de données publié porte un propriétaire, un délai de mise à disposition, ses consommateurs et sa criticité, déclarés dans dbt et visibles dans DataHub avec les résultats de ses tests.</li>
@@ -1213,7 +1146,8 @@ svg .head-w{fill:var(--warn)}
 </ul>
 
 <!-- ============================================================ -->
-<h2 id="securite">8. Sécurité, gouvernance et conformité</h2>
+
+<h2 id="securite">8. Sécurité, accès et conformité</h2>
 <div class="wrap"><table>
 <thead><tr><th>Domaine</th><th>Mesure</th></tr></thead>
 <tbody>
@@ -1239,7 +1173,20 @@ svg .head-w{fill:var(--warn)}
 </tbody></table></div>
 
 <!-- ============================================================ -->
-<h2 id="observabilite">9. Observabilité et exploitation</h2>
+
+<h2 id="dataops">9. DataOps et déploiement</h2>
+<ul>
+  <li><b>Infrastructure as code:</b> toute l'infrastructure (Firehose, Lambda, Fargate, Glue, MWAA, Lake Formation, KMS) est décrite en Terraform.</li>
+  <li><b>CI/CD par GitHub Actions:</b> revue de code obligatoire, contrôle Checkov, détection de secrets, estimation des coûts par Infracost dans chaque pull request, tags obligatoires.</li>
+  <li><b>Conteneurs:</b> une image par source, construite par GitHub Actions et publiée dans ECR, déployable indépendamment.</li>
+  <li><b>DAG:</b> déployés vers MWAA par GitHub Actions.</li>
+  <li><b>Domaines:</b> revue obligatoire par les responsables du domaine (CODEOWNERS). Une rupture de contrat crée une nouvelle version du modèle et laisse l'ancienne le temps de la migration.</li>
+  <li><b>dbt:</b> CI ciblée sur les modèles modifiés et leurs dépendants, puis job de production dans dbt Cloud. Le même code tourne en dev (dbt Core) et en prod.</li>
+</ul>
+
+<!-- ============================================================ -->
+
+<h2 id="observabilite">10. Exploitation, reprise et montée en charge</h2><h3>10.1 Supervision et traitement des incidents</h3>
 <div class="grid2">
   <div class="card"><h4>Streaming</h4><ul>
     <li>Métrique CloudWatch des erreurs de lecture publiée par la Lambda, alarme au-delà d'un seuil, notification SNS.</li>
@@ -1256,21 +1203,9 @@ svg .head-w{fill:var(--warn)}
 <p>L'observabilité reste volontairement simple: pas d'outil dédié à la santé des données. Si le nombre de produits de données à surveiller augmente, un outil spécialisé branché sur dbt s'ajoute sans changer l'architecture.</p>
 
 <!-- ============================================================ -->
-<h2 id="dataops">10. DataOps et déploiement</h2>
-<ul>
-  <li><b>Infrastructure as code:</b> toute l'infrastructure (Firehose, Lambda, Fargate, Glue, MWAA, Lake Formation, KMS) est décrite en Terraform.</li>
-  <li><b>CI/CD par GitHub Actions:</b> revue de code obligatoire, contrôle Checkov, détection de secrets, estimation des coûts par Infracost dans chaque pull request, tags obligatoires.</li>
-  <li><b>Conteneurs:</b> une image par source, construite par GitHub Actions et publiée dans ECR, déployable indépendamment.</li>
-  <li><b>DAG:</b> déployés vers MWAA par GitHub Actions.</li>
-  <li><b>Domaines:</b> revue obligatoire par les responsables du domaine (CODEOWNERS). Une rupture de contrat crée une nouvelle version du modèle et laisse l'ancienne le temps de la migration.</li>
-  <li><b>dbt:</b> CI ciblée sur les modèles modifiés et leurs dépendants, puis job de production dans dbt Cloud. Le même code tourne en dev (dbt Core) et en prod.</li>
-</ul>
+<div class="wrap"><table><thead><tr><th>Responsabilité</th><th>Intervenants</th></tr></thead><tbody><tr><td>Alertes et incidents d’ingestion</td><td>L’équipe technique reçoit les alertes. Le Data Engineer prend en charge les pipelines, avec l’architecte pour les incidents complexes et les arbitrages.</td></tr><tr><td>Modèles et indicateurs</td><td>L’Analytics Engineer du domaine corrige les modèles. Le sponsor métier valide les définitions et les impacts sur les usages.</td></tr><tr><td>Socle et exploitation</td><td>L’architecte porte les standards, la sécurité, la reprise et les choix de capacité, avec le Data Engineer pour leur mise en œuvre opérationnelle.</td></tr></tbody></table></div>
 
-<!-- ============================================================ -->
-<h2 id="resilience">11. Résilience, réversibilité et scalabilité</h2>
-<p>Cette section répond à trois questions: comment la plateforme repart après une panne, comment elle peut quitter AWS, et comment elle absorbe une charge plus forte.</p>
-
-<h3>11.1 Sauvegarde et reprise</h3>
+<h3 id="resilience">10.2 Sauvegarde et reprise</h3>
 <div class="wrap"><table>
 <thead><tr><th>Périmètre</th><th>Ce qui protège</th><th>Comment on reprend</th></tr></thead>
 <tbody>
@@ -1287,57 +1222,17 @@ svg .head-w{fill:var(--warn)}
 <tr><td>Gold</td><td>24 h</td><td>Objectif de 24 h pour une corruption logique avec snapshots et données sources disponibles. La reconstruction dépend de la conservation des fichiers et métadonnées nécessaires.</td></tr>
 </tbody></table></div>
 
-<p>Les durées de remise en service et les pertes de données admissibles sont des objectifs d’exploitation, définis pour des incidents locaux avec les sauvegardes disponibles. Les snapshots et le versioning conservés dans le même compte partagent son périmètre de défaillance. Le plan de reprise couvre les données, les métadonnées Iceberg et Glue, les bases applicatives Metabase et DataHub, les configurations et les secrets. Les demandes d’effacement sont prises en compte avant remise à disposition des données restaurées. La reprise après perte du compte ou de la région relève d’un périmètre distinct (section 11.2).</p>
-<h3>11.2 Région et réversibilité</h3>
+<p>Les durées de remise en service et les pertes de données admissibles sont des objectifs d’exploitation, définis pour des incidents locaux avec les sauvegardes disponibles. Les snapshots et le versioning conservés dans le même compte partagent son périmètre de défaillance. Le plan de reprise couvre les données, les métadonnées Iceberg et Glue, les bases applicatives Metabase et DataHub, les configurations et les secrets. Les demandes d’effacement sont prises en compte avant remise à disposition des données restaurées. La reprise après perte du compte ou de la région relève d’un périmètre distinct (section 10.3).</p>
+<h3>10.3 Région et réversibilité</h3>
 <ul>
   <li><b>Région:</b> une seule région AWS (Irlande). La reprise hors région et la sortie d'AWS ont été essayées en POC sur Google Cloud (Paris), en lecture dégradée du Gold: tables Iceberg lues par BigQuery, dbt avec l'adaptateur BigQuery. Ce n'est pas un plan de reprise après sinistre éprouvé.</li>
   <li><b>Ce qui se déplace facilement:</b> les formats ouverts (Iceberg, Parquet), le code dbt et les conteneurs, sous réserve de compatibilité.</li>
   <li><b>Points de verrouillage AWS, isolés:</b> IAM et VPC, Lake Formation, Firehose et Lambda, le couple Athena et Glue Data Catalog.</li>
 </ul>
 
-<h3>11.3 Scalabilité</h3>
-<p>Chaque brique a son mode de croissance et un signal qui dit quand changer. Les seuils se fixent sur les mesures réelles, pas à l'avance.</p>
-<div class="fgroup">
-<div class="fam-tabs" role="radiogroup" aria-label="Familles de briques">
-<button type="button" class="chk" data-fam="all" aria-pressed="false" style="--c:var(--accent)">Tout afficher</button>
-<button type="button" data-fam="ing" aria-pressed="false" style="--c:var(--stream)">Ingestion <span class="n">6</span></button>
-<button type="button" data-fam="sto" aria-pressed="false" style="--c:var(--accent)">Stockage et catalogue <span class="n">3</span></button>
-<button type="button" data-fam="cal" aria-pressed="false" style="--c:var(--batch)">Calcul et transformation <span class="n">3</span></button>
-<button type="button" data-fam="orc" aria-pressed="false" style="--c:var(--gov)">Orchestration et supervision <span class="n">4</span></button>
-</div>
-<div class="wrap"><table>
-<thead><tr><th>Brique</th><th>Comment elle absorbe la charge</th><th>Signal de changement</th><th>Étape suivante</th></tr></thead>
-<tbody>
-<tr data-fam="ing"><td>Firehose</td><td>S'adapte au débit, dans la limite des quotas du compte</td><td>Quotas approchés, besoin à la seconde, plusieurs consommateurs, rejeu long</td><td>Kinesis Data Streams, puis Kafka (ADR-004)</td></tr>
-<tr data-fam="ing"><td>Lambda</td><td>Exécutions en parallèle, dans la limite de la concurrence du compte</td><td>Exécutions limitées (throttling) pendant un pic</td><td>Concurrence réservée, regroupement plus large des enregistrements</td></tr>
-<tr data-fam="ing"><td>Conteneurs Fargate</td><td>Un conteneur par source, lancés en parallèle par Airflow</td><td>Durée d'exécution qui menace l'échéance de 7 h</td><td>Découpage des extractions, plus de mémoire et de processeur par tâche</td></tr>
-<tr data-fam="ing"><td>Airbyte Cloud</td><td>Facturé au volume synchronisé</td><td>Coût qui devient le premier poste</td><td>Synchronisations moins fréquentes, ou capture des changements hébergée par l'équipe</td></tr>
-<tr data-fam="ing"><td>MongoDB Atlas (source)</td><td>La capture des changements lit le journal de la base</td><td>Charge sur la base de l'application, ou journal trop court entre deux synchronisations</td><td>Synchronisations plus fréquentes, lecture sur un nœud secondaire</td></tr>
-<tr data-fam="ing"><td>API des sources (Stripe, HubSpot, réseaux sociaux, BunnyCDN)</td><td>Quotas propres à chaque fournisseur, par exemple 30 requêtes par 10 secondes pour l'API de logs de BunnyCDN</td><td>Limitation de débit</td><td>Extraction incrémentale, parallélisme limité, nouvelles tentatives espacées</td></tr>
-<tr data-fam="sto"><td>S3</td><td>Volume sans limite pratique, débit plafonné par préfixe</td><td>Erreurs de ralentissement à l'écriture</td><td>Écritures réparties sur davantage de préfixes</td></tr>
-<tr data-fam="sto"><td>Glue Data Catalog et métadonnées Iceberg</td><td>Quotas d’appels du service Glue et croissance des métadonnées Iceberg: fichiers, manifests et snapshots</td><td>Préparation des requêtes Athena qui s'allonge</td><td>Adapter le partitionnement Iceberg, compacter les fichiers, expirer les snapshots et entretenir les manifests. Les partitions Iceberg ne sont pas des partitions Hive enregistrées une à une dans Glue.</td></tr>
-<tr data-fam="sto"><td>KMS</td><td>Quotas de requêtes de chiffrement</td><td>Refus de KMS lors de gros volumes d'écriture</td><td>Clés de compartiment S3, qui réduisent les appels à KMS</td></tr>
-<tr data-fam="cal"><td>Glue Spark</td><td>Nombre de travailleurs ajustable par exécution</td><td>Durée du job ou coût qui croît avec les logs</td><td>Plus de travailleurs, partitionnement revu, compaction plus fréquente</td></tr>
-<tr data-fam="cal"><td>Athena</td><td>Sans serveur, facturé aux données lues</td><td>Requêtes simultanées plafonnées, latence irrégulière pour les tableaux de bord</td><td>Capacité réservée, ou autre moteur sur les mêmes tables Iceberg</td></tr>
-<tr data-fam="cal"><td>dbt Cloud</td><td>Le calcul est fait par Athena, dbt orchestre</td><td>Job nocturne qui menace l'échéance de 7 h</td><td>Plus de modèles incrémentaux, plus d'exécutions en parallèle, un job par domaine</td></tr>
-<tr data-fam="orc"><td>MWAA</td><td>Travailleurs ajoutés automatiquement selon les tâches en attente</td><td>Tâches en file d'attente</td><td>Taille d'environnement supérieure à medium (large)</td></tr>
-<tr data-fam="orc"><td>Metabase sur Fargate</td><td>Une tâche</td><td>Tableaux lents, nombreux utilisateurs simultanés</td><td>Plus de mémoire, plusieurs tâches derrière un répartiteur de charge, cache, tables Gold agrégées</td></tr>
-<tr data-fam="orc"><td>DataHub sur EC2</td><td>Une instance</td><td>Ingestions ou interface lentes</td><td>Instance plus grande, puis déploiement sur un cluster de conteneurs</td></tr>
-<tr data-fam="orc"><td>CloudWatch et SNS</td><td>Managés, facturés par métrique</td><td>Coût qui croît avec le nombre de métriques</td><td>Dimensions limitées, jamais une par URL ou par utilisateur</td></tr>
-</tbody></table></div>
-</div>
-
-<!-- ============================================================ -->
-<h2 id="couts">12. FinOps</h2>
+<h3>10.4 Principaux facteurs de montée en charge</h3><ul><li>Débit de collecte et quotas des producteurs, de Firehose, de Lambda et des API.</li><li>Durée du batch et files d’attente MWAA par rapport à l’objectif de disponibilité du Gold.</li><li>Nombre de petits fichiers et croissance des métadonnées Iceberg, volumes lus et concurrence Athena.</li><li>Concurrence des utilisateurs Metabase et capacité des composants auto-hébergés.</li></ul><p>Le détail par service et les signaux de changement figurent dans <a href="#capacite">l’annexe B</a>.</p>
+<h2 id="couts">11. FinOps</h2>
 <p>La plateforme data fonctionne avec un budget cible d'environ 5 k€ par mois pour les outils, hors salaires, suivi chaque mois avec la direction.</p>
-<div class="wrap"><table>
-<thead><tr><th>Chemin</th><th>Postes de coût</th><th>Ordre de grandeur et leviers</th></tr></thead>
-<tbody>
-<tr><td>Streaming</td><td>Firehose, Lambda, métrique et alarmes CloudWatch, stockage S3</td><td>Le coût mensuel de la chaîne de collecte des événements du lecteur vidéo est estimé à environ 80 € pour Firehose et Lambda, hors stockage et supervision. Le stockage S3 et la supervision sont inclus dans leurs lignes mutualisées du budget, pas dans les 80 €. Le coût complet du flux n’est donc pas isolé. Les requêtes Athena qui alimentent Metabase sont comptées séparément.</td></tr>
-<tr><td>Batch, calcul</td><td>MWAA, Fargate, Glue Spark</td><td>Fargate et Glue Spark sont facturés à l'exécution. Le coût récurrent de MWAA est détaillé dans le tableau ci-dessous.</td></tr>
-<tr><td>Batch, stockage et moteur</td><td>S3, Iceberg, Athena</td><td>Facture d'analyse sans entrepôt provisionné (comparaison en section 3.4). Leviers: partitions, compaction, groupes de travail avec limite de lecture.</td></tr>
-<tr><td>Batch, services externes</td><td>Airbyte Cloud, dbt Cloud, Metabase sur Fargate</td><td>Airbyte est le poste qui croît avec le volume. Metabase open source plutôt qu'une offre managée.</td></tr>
-</tbody></table></div>
 <p><b>Coût par outil.</b> Estimation mensuelle de run, en euros, tirée du budget service par service. Ce sont des ordres de grandeur, pas des factures. Budget cible: environ 5 000 € par mois.</p>
 <div class="fgroup">
 <div class="fam-tabs" role="radiogroup" aria-label="Familles d'outils">
@@ -1388,32 +1283,34 @@ svg .head-w{fill:var(--warn)}
 <p><b>Infracost.</b> Il lit le code Terraform et affiche dans chaque pull request l'écart de coût mensuel estimé, avant le déploiement. Une hausse se discute donc en revue, pas sur la facture. Sa limite: il estime les ressources AWS décrites en Terraform, à partir d'hypothèses d'usage, et ne couvre ni les services externes (Airbyte Cloud, dbt Cloud, MongoDB Atlas) ni la facture réelle, suivie par le CUR.</p>
 
 <!-- ============================================================ -->
-<p>Les estimations de novembre 2026 reposent notamment sur 15 à 30 Go de logs CDN bruts non compressés par jour. Les 80 € de tracking couvrent Firehose et Lambda. S3, Athena et la supervision sont comptés dans leurs lignes mutualisées. Les 15 € de collecte CDN constituent une hypothèse de dimensionnement. La ligne Glue regroupe le traitement CDN, le dédoublonnage du tracking, le catalogue et la maintenance. Les montants Metabase et application ML sont séparés de la ligne Fargate générale. L’enveloppe dbt Cloud est estimée à 500 € pour cinq sièges et l’usage retenu. Les variations de volume, les reprises historiques et les frais mutualisés sont suivis lors de la revue mensuelle. Le total estimé de 4 140 € laisse 860 € par rapport à la cible de 5 000 €.</p>
-<h2 id="risques">13. Risques et limites assumées</h2>
+<p>Les estimations de novembre 2026 reposent sur les hypothèses de charge de la section 2.3. Les 80 € du tracking couvrent Firehose et Lambda, avec stockage, supervision et Athena dans les lignes mutualisées. Les 15 € de collecte CDN sont une hypothèse de dimensionnement. Metabase et l’application ML sont exclus de la ligne Fargate générale. L’enveloppe dbt couvre cinq sièges et l’usage retenu. Les volumes, reprises et frais mutualisés sont suivis lors de la revue mensuelle. L’écart entre le total estimé et la cible est de 860 €.</p>
+
+<h2 id="risques">12. Limites et évolutions envisagées</h2>
 <div class="wrap"><table>
 <thead><tr><th>Limite ou risque</th><th>Pourquoi c'est accepté</th><th>Réponse si cela devient gênant</th></tr></thead>
 <tbody>
 <tr><td>Quasi temps réel en minutes, pas à la seconde</td><td>Les décisions métier se prennent à l'échelle de la minute ou de la journée.</td><td>Kinesis Data Streams ou Kafka (ADR-004).</td></tr>
 <tr><td>Un seul consommateur du flux, rejeu limité à la copie d'origine et aux DAG</td><td>Un seul usage du flux aujourd'hui.</td><td>Kinesis Data Streams pour plusieurs consommateurs et un rejeu long.</td></tr>
 <tr><td>Chiffre du jour provisoire</td><td>Clairement libellé, remplacé après consolidation réussie. Conservé avec un statut de retard si le batch échoue.</td><td>Réconciliation suivie comme indicateur de qualité.</td></tr>
-<tr><td>Athena: latence moins régulière, requêtes simultanées plafonnées</td><td>Coût très inférieur à un entrepôt.</td><td>Redshift Serverless si Metabase ralentit ou si les volumes lus explosent (ADR-002).</td></tr>
-<tr><td>Iceberg demande de l'entretien (petits fichiers, suppression effective après réécriture)</td><td>C'est ce qui rend le stockage portable.</td><td>Compaction et nettoyage planifiés dans Airflow.</td></tr>
+<tr><td>Athena: latence moins régulière, requêtes simultanées plafonnées</td><td>Choix aligné sur le budget et la charge analytique estimée.</td><td>Redshift Serverless si Metabase ralentit ou si les volumes lus explosent (ADR-002).</td></tr>
+<tr><td>Iceberg demande de l'entretien (petits fichiers, suppression effective après réécriture)</td><td>Compromis accepté pour les mises à jour, suppressions et versions des tables.</td><td>Compaction et nettoyage planifiés dans Airflow.</td></tr>
 <tr><td>Dépendance aux services externes (Airbyte Cloud, dbt Cloud, MongoDB Atlas, CDN)</td><td>Outils ouverts, compétences disponibles.</td><td>Voie de sortie écrite dans chaque ADR (Airbyte open source, SQLMesh, Superset).</td></tr>
-<tr><td>Un seul compte AWS, une seule région</td><td>Simple et peu coûteux pour une petite équipe. Dev et prod séparées par les rôles et Lake Formation.</td><td>Un compte par environnement avec AWS Organizations (ADR-008). Reprise hors région par le plan de sortie essayé en POC.</td></tr>
+<tr><td>Un seul compte AWS, une seule région</td><td>Simple et peu coûteux pour une petite équipe. Dev et prod séparées par les rôles et Lake Formation.</td><td>Un compte par environnement avec AWS Organizations (ADR-008). Reprise hors région à industrialiser à partir du POC de réversibilité.</td></tr>
 <tr><td>Organisation par domaines partielle</td><td>Ce ne sont pas quatre équipes autonomes. Chaque domaine a un sponsor métier, et ses modèles sont construits par l'Analytics Engineer du domaine dans le cadre commun de l'équipe data. Plateforme, sécurité, FinOps, consentement et standards restent centralisés.</td><td>Le coût est le temps des sponsors et la discipline sur les contrats. Davantage d'autonomie par domaine si l'équipe grandit.</td></tr>
-<tr><td>Pas de blocage automatique de la publication</td><td><code>dbt build</code> fait ignorer les modèles aval concernés par un test bloquant en échec, mais le modèle testé est déjà écrit. Cela suffit au volume actuel.</td><td>Publication après validation (écriture, contrôle, puis publication sur Iceberg).</td></tr>
+<tr><td>Pas de blocage automatique de la publication</td><td><code>dbt build</code> fait ignorer les modèles aval concernés par un test bloquant en échec, mais le modèle testé est déjà écrit. Cette limite est prise en compte dans le suivi de qualité.</td><td>Publication après validation (écriture, contrôle, puis publication sur Iceberg).</td></tr>
 <tr><td>Observabilité simple</td><td>Peu de produits de données à surveiller.</td><td>Outil dédié à la santé des données, branché sur dbt.</td></tr>
 </tbody></table></div>
 
 <!-- ============================================================ -->
-<h2 id="choix">14. Choix et alternatives écartées</h2>
+
+<h2 id="choix">Annexe A. Choix et alternatives</h2><details class="annexe"><summary>Afficher annexe a. choix et alternatives</summary>
 <div class="wrap"><table>
 <thead><tr><th>Décision</th><th>Retenu</th><th>Écarté</th><th>Raison</th></tr></thead>
 <tbody>
 <tr><td>Transport des événements (ADR-004)</td><td>Firehose avec Lambda</td><td>Kafka (MSK ou auto-hébergé), Kinesis Data Streams</td><td>Service managé, aucun cluster ni shard. Une fraîcheur de quelques minutes, une destination principale et une charge d'exploitation limitée suffisent à ce besoin. Kafka serait un composant permanent à exploiter, au coût fixe élevé, pour un besoin en minutes. Kinesis Data Streams n'est pas demandé aujourd'hui: la copie d'origine dans S3 assure la rétention, et le rejeu passe par les DAG. C'est la première voie de sortie (voir sous le tableau). Perte acceptée: plusieurs consommateurs et rejeu long du flux.</td></tr>
 <tr><td>Réunion des deux chemins</td><td>Vue Athena (architecture de type Lambda, section 2.1)</td><td>Architecture Kappa</td><td>Kappa ferait tout passer par un flux rejouable. Chez Artify, le rejeu passe par les DAG et le recalcul nocturne, bien moins cher.</td></tr>
 <tr><td>Orchestration (ADR-005)</td><td>MWAA en prod, Airflow sur EC2 en dev</td><td>Airflow sur EC2 en prod, Step Functions et EventBridge comme orchestrateur général</td><td>Moins d'administration qu'un Airflow sur serveur. Opérateurs natifs pour Airbyte, dbt et les capteurs, plus portable qu'un orchestrateur propre à AWS. Perte acceptée: MWAA coûte plus cher qu'une EC2.</td></tr>
-<tr><td>Stockage et moteur (ADR-001, ADR-002)</td><td>S3, Iceberg et Athena, sans entrepôt</td><td>Redshift provisionné, Snowflake, Databricks</td><td>Athena estimé à 210 € par mois (section 12). Les alternatives doivent être comparées à charge et disponibilité équivalentes. Format ouvert lisible par d'autres moteurs. Perte acceptée: latence moins régulière, requêtes simultanées plafonnées.</td></tr>
+<tr><td>Stockage et moteur (ADR-001, ADR-002)</td><td>S3, Iceberg et Athena, sans entrepôt</td><td>Redshift provisionné, Snowflake, Databricks</td><td>Athena estimé à 210 € par mois (section 11). Les alternatives doivent être comparées à charge et disponibilité équivalentes. Format ouvert lisible par d'autres moteurs. Perte acceptée: latence moins régulière, requêtes simultanées plafonnées.</td></tr>
 <tr><td>Ingestion MongoDB</td><td>Airbyte Cloud en CDC</td><td>Airflow et pymongo avec un repère de date, AWS DMS, Debezium sur MSK</td><td>Le CDC capte les suppressions. DMS laisse peu de contrôle sur la transformation. Debezium impose un composant permanent à exploiter.</td></tr>
 <tr><td>Autres sources</td><td>Un conteneur Python par source sur Fargate</td><td>Scripts dans Airflow, Glue Spark pour tout</td><td>Chaque connecteur se déploie seul, avec son rôle et son secret. Airflow reste un orchestrateur pur. Spark n'est pas justifié par les volumes de ces sources.</td></tr>
 <tr><td>Logs du CDN</td><td>Glue Spark, lancé par Airflow</td><td>Cluster EMR</td><td>Le dimensionnement repose sur une estimation de 15 à 30 Go de logs CDN bruts non compressés par jour. Orchestré par Airflow, Glue Spark traite les logs au quotidien et lors des recalculs historiques. Le job dédoublonne les requêtes, filtre le trafic automatisé et technique, rattache les requêtes aux contenus du catalogue et écrit le Silver dans Iceberg. dbt utilise ensuite ces données pour calculer les indicateurs métier du Gold.</td></tr>
@@ -1425,7 +1322,42 @@ svg .head-w{fill:var(--warn)}
 
 
 <!-- ============================================================ -->
-<h2 id="glossaire">15. Glossaire</h2><p>PPV: paiement à la séance. RTO: durée cible de remise en service. RPO: perte de données maximale visée pour un scénario donné. OIDC: protocole de fédération d’identité. CODEOWNERS: fichier GitHub qui associe les chemins du dépôt aux responsables de revue.</p>
+<p>Le choix des couches médaillon sépare conservation, préparation et publication. L’approche par domaines garde un socle commun adapté à l’équipe. Les services managés réduisent l’administration des pipelines. Les formats ouverts facilitent une évolution du moteur, sous réserve d’adaptations et de tests.</p></details>
+<h2 id="capacite">Annexe B. Capacité par service</h2><details class="annexe"><summary>Afficher annexe b. capacité par service</summary>
+<p>Chaque brique a son mode de croissance et un signal qui dit quand changer. Les seuils se fixent sur les mesures réelles, pas à l'avance.</p>
+<div class="fgroup">
+<div class="fam-tabs" role="radiogroup" aria-label="Familles de briques">
+<button type="button" class="chk" data-fam="all" aria-pressed="false" style="--c:var(--accent)">Tout afficher</button>
+<button type="button" data-fam="ing" aria-pressed="false" style="--c:var(--stream)">Ingestion <span class="n">6</span></button>
+<button type="button" data-fam="sto" aria-pressed="false" style="--c:var(--accent)">Stockage et catalogue <span class="n">3</span></button>
+<button type="button" data-fam="cal" aria-pressed="false" style="--c:var(--batch)">Calcul et transformation <span class="n">3</span></button>
+<button type="button" data-fam="orc" aria-pressed="false" style="--c:var(--gov)">Orchestration et supervision <span class="n">4</span></button>
+</div>
+<div class="wrap"><table>
+<thead><tr><th>Brique</th><th>Comment elle absorbe la charge</th><th>Signal de changement</th><th>Étape suivante</th></tr></thead>
+<tbody>
+<tr data-fam="ing"><td>Firehose</td><td>S'adapte au débit, dans la limite des quotas du compte</td><td>Quotas approchés, besoin à la seconde, plusieurs consommateurs, rejeu long</td><td>Kinesis Data Streams, puis Kafka (ADR-004)</td></tr>
+<tr data-fam="ing"><td>Lambda</td><td>Exécutions en parallèle, dans la limite de la concurrence du compte</td><td>Exécutions limitées (throttling) pendant un pic</td><td>Concurrence réservée, regroupement plus large des enregistrements</td></tr>
+<tr data-fam="ing"><td>Conteneurs Fargate</td><td>Un conteneur par source, lancés en parallèle par Airflow</td><td>Durée d'exécution qui menace l'échéance de 7 h</td><td>Découpage des extractions, plus de mémoire et de processeur par tâche</td></tr>
+<tr data-fam="ing"><td>Airbyte Cloud</td><td>Facturé au volume synchronisé</td><td>Coût qui devient le premier poste</td><td>Synchronisations moins fréquentes, ou capture des changements hébergée par l'équipe</td></tr>
+<tr data-fam="ing"><td>MongoDB Atlas (source)</td><td>La capture des changements lit le journal de la base</td><td>Charge sur la base de l'application, ou journal trop court entre deux synchronisations</td><td>Synchronisations plus fréquentes, lecture sur un nœud secondaire</td></tr>
+<tr data-fam="ing"><td>API des sources (Stripe, HubSpot, réseaux sociaux, BunnyCDN)</td><td>Quotas propres à chaque fournisseur, par exemple 30 requêtes par 10 secondes pour l'API de logs de BunnyCDN</td><td>Limitation de débit</td><td>Extraction incrémentale, parallélisme limité, nouvelles tentatives espacées</td></tr>
+<tr data-fam="sto"><td>S3</td><td>Volume sans limite pratique, débit plafonné par préfixe</td><td>Erreurs de ralentissement à l'écriture</td><td>Écritures réparties sur davantage de préfixes</td></tr>
+<tr data-fam="sto"><td>Glue Data Catalog et métadonnées Iceberg</td><td>Quotas d’appels du service Glue et croissance des métadonnées Iceberg: fichiers, manifests et snapshots</td><td>Préparation des requêtes Athena qui s'allonge</td><td>Adapter le partitionnement Iceberg, compacter les fichiers, expirer les snapshots et entretenir les manifests. Les partitions Iceberg ne sont pas des partitions Hive enregistrées une à une dans Glue.</td></tr>
+<tr data-fam="sto"><td>KMS</td><td>Quotas de requêtes de chiffrement</td><td>Refus de KMS lors de gros volumes d'écriture</td><td>Clés de compartiment S3, qui réduisent les appels à KMS</td></tr>
+<tr data-fam="cal"><td>Glue Spark</td><td>Nombre de travailleurs ajustable par exécution</td><td>Durée du job ou coût qui croît avec les logs</td><td>Plus de travailleurs, partitionnement revu, compaction plus fréquente</td></tr>
+<tr data-fam="cal"><td>Athena</td><td>Sans serveur, facturé aux données lues</td><td>Requêtes simultanées plafonnées, latence irrégulière pour les tableaux de bord</td><td>Capacité réservée, ou autre moteur sur les mêmes tables Iceberg</td></tr>
+<tr data-fam="cal"><td>dbt Cloud</td><td>Le calcul est fait par Athena, dbt orchestre</td><td>Job nocturne qui menace l'échéance de 7 h</td><td>Plus de modèles incrémentaux, plus d'exécutions en parallèle, un job par domaine</td></tr>
+<tr data-fam="orc"><td>MWAA</td><td>Travailleurs ajoutés automatiquement selon les tâches en attente</td><td>Tâches en file d'attente</td><td>Taille d'environnement supérieure à medium (large)</td></tr>
+<tr data-fam="orc"><td>Metabase sur Fargate</td><td>Une tâche</td><td>Tableaux lents, nombreux utilisateurs simultanés</td><td>Plus de mémoire, plusieurs tâches derrière un répartiteur de charge, cache, tables Gold agrégées</td></tr>
+<tr data-fam="orc"><td>DataHub sur EC2</td><td>Une instance</td><td>Ingestions ou interface lentes</td><td>Instance plus grande, puis déploiement sur un cluster de conteneurs</td></tr>
+<tr data-fam="orc"><td>CloudWatch et SNS</td><td>Managés, facturés par métrique</td><td>Coût qui croît avec le nombre de métriques</td><td>Dimensions limitées, jamais une par URL ou par utilisateur</td></tr>
+</tbody></table></div>
+</div>
+
+<!-- ============================================================ -->
+</details>
+<h2 id="glossaire">Annexe C. Glossaire</h2><details class="annexe"><summary>Afficher annexe c. glossaire</summary><p>PPV: paiement à la séance. RTO: durée cible de remise en service. RPO: perte de données maximale visée pour un scénario donné. OIDC: protocole de fédération d’identité. CODEOWNERS: fichier GitHub qui associe les chemins du dépôt aux responsables de revue.</p>
 <div class="fgroup">
 <div class="fam-tabs" role="radiogroup" aria-label="Familles de termes">
 <button type="button" class="chk" data-fam="all" aria-pressed="false" style="--c:var(--accent)">Tout afficher</button>
@@ -1452,7 +1384,7 @@ svg .head-w{fill:var(--warn)}
 <tr data-fam="ing"><td>DynamoDB</td><td>Base clé-valeur managée. Elle garde le point de reprise de la collecte des logs du CDN.</td></tr>
 <tr data-fam="ing"><td>EventBridge Scheduler</td><td>Déclencheur planifié d'AWS. Il lance chaque minute la Lambda de collecte des logs du CDN.</td></tr>
 <tr data-fam="ing cal"><td>Fargate</td><td>Exécution de conteneurs sans serveur à administrer. Un conteneur par source ingère les données et écrit le Silver.</td></tr>
-<tr data-fam="ing"><td>Firehose</td><td>Service AWS qui reçoit les événements et les livre par lots, ici toutes les une à cinq minutes.</td></tr>
+<tr data-fam="ing"><td>Firehose</td><td>Service AWS qui reçoit les événements et les livre par lots avec des paramètres de buffering configurables.</td></tr>
 <tr data-fam="orc"><td>Fraîcheur</td><td>Délai entre le moment où une donnée existe à la source et celui où elle est disponible pour les utilisateurs.</td></tr>
 <tr data-fam="cal"><td>Glue Spark</td><td>Job Spark managé. Il traite chaque jour les logs du CDN et dédoublonne chaque nuit les événements du lecteur vidéo.</td></tr>
 <tr data-fam="con"><td>Hub & Spoke</td><td>Un centre (la plateforme) qui fournit socle et standards, et des branches (les domaines) qui publient leurs produits.</td></tr>
@@ -1472,7 +1404,7 @@ svg .head-w{fill:var(--warn)}
 </tbody></table></div>
 </div>
 
-<footer>
+</details><footer>
 HLD de la plateforme data d'Artify. Document de conception à grande maille, complété par le DAT (vision d'ensemble et décisions) et par les LLD (détail de chaque brique). Les montants sont des estimations, pas des factures. Les logos sont la propriété de leurs détenteurs respectifs.
 </footer>
 </main>
@@ -1518,7 +1450,7 @@ HLD de la plateforme data d'Artify. Document de conception à grande maille, com
     g.__sel=function(k){return !!sel[k];};
     btns.forEach(function(b){b.addEventListener('click',function(){clickFam(b.getAttribute('data-fam'));});});
     btns.forEach(function(b){b.setAttribute('role',b.getAttribute('data-fam')==='all'?'checkbox':'radio');});
-    first(); render();
+    fams.forEach(function(f){sel[f]=true;}); render();
   });
 
   var P1={'Lecteur vidéo':[1],'Application':[1],'Firehose':[2],'AWS Lambda':[3],'Silver du tracking':[4],'Copie d\u2019origine':[5],'DAG de rejeu':[5],'CloudWatch':[6],'Amazon SNS':[6],'Vue Athena':[8],'Metabase':[8]};
