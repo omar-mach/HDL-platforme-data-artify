@@ -113,6 +113,9 @@ table.flow td:nth-child(3){width:38%}
 .fn{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:12px;font-weight:700}
 .stepl{cursor:pointer}.stepl:hover circle{filter:brightness(1.25)}
 tr.hit td,li.hit{background:var(--accent-soft);transition:background .3s}
+.nlist{list-style:none;padding-left:0}.nlist li{margin-bottom:8px}
+.famseg:hover rect{filter:brightness(1.15)}
+.bus td.c{text-align:center;color:var(--accent);font-weight:700;width:64px}
 tr[id^="f5"],tr[id^="f6"],tr[id^="f11"],li[id^="lin-"]{scroll-margin-top:80px}
 ol.steps{padding-left:22px}
 ol.steps li{margin-bottom:6px}
@@ -154,7 +157,9 @@ h2{font-size:27px;color:var(--accent);border-top:2px solid var(--accent-soft)}
 h3{font-size:20px;color:var(--h3)}
 h1{font-size:29px}
 .card h4{font-size:16px}
-:root{--h3:#24496b}
+:root{--h3:#24496b;--lg:#4aa87c}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--lg:#8fd5b0}}
+:root[data-theme="dark"]{--lg:#8fd5b0}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--h3:#b7d2ea}}
 :root[data-theme="dark"]{--h3:#b7d2ea}
 .hero{margin:18px 0 10px}
@@ -319,9 +324,9 @@ table.cmp td[data-l="Détail"]{white-space:nowrap}
   <rect x="8" y="86" width="1074" height="90" rx="0" style="fill:var(--bg);opacity:.55"/>
   <rect x="8" y="284" width="1074" height="70" rx="0" style="fill:var(--bg);opacity:.55"/>
   <rect x="8" y="440" width="1074" height="64" rx="0" style="fill:var(--bg);opacity:.55"/>
-  <rect x="360" y="8" width="720" height="574" rx="16" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-dasharray:7 5"/>
+  <rect x="360" y="8" width="720" height="574" rx="16" style="fill:none;stroke:var(--lg);stroke-width:1.6;stroke-dasharray:7 5"/>
   <svg x="374" y="14" width="22" height="22" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-13" x="5" y="5" width="22" height="22"/></svg>
-  <text x="404" y="30" class="zone" style="font-size:13px;fill:var(--accent)">LEAD DATA ARCHITECT · ARCHITECTURE DE TOUT LE PÉRIMÈTRE ENCADRÉ</text>
+  <text x="404" y="30" class="zone" style="font-size:13px;fill:var(--lg)">LEAD DATA ARCHITECT · ARCHITECTURE DE TOUT LE PÉRIMÈTRE ENCADRÉ</text>
   <text x="404" y="46" class="sm" style="font-size:11px">roadmap, arbitrages, standards DataOps et gouvernance, FinOps, ADR, DAT, HLD et LLD</text>
   <rect x="366" y="56" width="484" height="520" rx="14" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.2"/>
   <text x="608" y="76" text-anchor="middle" class="zone" style="font-size:13px;fill:var(--accent)">LA PLATEFORME DATA</text>
@@ -333,10 +338,10 @@ table.cmp td[data-l="Détail"]{white-space:nowrap}
   <path d="M8,176 L1082,176" style="fill:none;stroke:var(--line);stroke-width:1"/>
   <svg x="14" y="217" width="22" height="22" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-13" x="5" y="5" width="22" height="22"/></svg>
   <svg x="38" y="217" width="22" height="22" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-13" x="5" y="5" width="22" height="22"/></svg>
-  <text x="66" y="231" class="lbl" style="font-size:12px">Data Engineer et Lead Data Architect</text>
+  <text x="66" y="231" class="lbl" style="font-size:12px">Data Engineer et <tspan style="fill:var(--lg)">Lead Data Architect</tspan></text>
   <path d="M8,284 L1082,284" style="fill:none;stroke:var(--line);stroke-width:1"/>
   <svg x="14" y="306" width="22" height="22" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-13" x="5" y="5" width="22" height="22"/></svg>
-  <text x="42" y="320" class="lbl" style="font-size:12px">Lead Data Architect</text>
+  <text x="42" y="320" class="lbl" style="font-size:12px;fill:var(--lg)">Lead Data Architect</text>
   <path d="M8,354 L1082,354" style="fill:none;stroke:var(--line);stroke-width:1"/>
   <svg x="14" y="384" width="22" height="22" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-22" x="5" y="5" width="22" height="22"/></svg>
   <text x="42" y="398" class="lbl" style="font-size:12px">Analytics Engineers</text>
@@ -345,7 +350,7 @@ table.cmp td[data-l="Détail"]{white-space:nowrap}
   <text x="42" y="473" class="lbl" style="font-size:12px">AI Engineer</text>
   <path d="M8,504 L1082,504" style="fill:none;stroke:var(--line);stroke-width:1"/>
   <svg x="14" y="526" width="22" height="22" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-13" x="5" y="5" width="22" height="22"/></svg>
-  <text x="42" y="540" class="lbl" style="font-size:12px">Lead Data Architect</text>
+  <text x="42" y="540" class="lbl" style="font-size:12px;fill:var(--lg)">Lead Data Architect</text>
   <rect x="166" y="96" width="90" height="28" rx="7" class="box"/>
   <svg x="172" y="102" width="16" height="16" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><g transform="translate(-244.0 -166.0)"><path transform="translate(250 172) scale(0.833333)" d="M17.193 9.555c-1.264-5.58-4.252-7.414-4.573-8.115-.28-.394-.53-.954-.735-1.44-.036.495-.055.685-.523 1.184-.723.566-4.438 3.682-4.74 10.02-.282 5.912 4.27 9.435 4.888 9.884l.07.05A73.49 73.49 0 0111.91 24h.481c.114-1.032.284-2.056.51-3.07.417-.296.604-.463.85-.693a11.342 11.342 0 003.639-8.464c.01-.814-.103-1.662-.197-2.218zm-5.336 8.195s0-8.291.275-8.29c.213 0 .49 10.695.49 10.695-.381-.045-.765-1.76-.765-2.405z" fill="#47A248"/>
   </g></svg>
@@ -792,13 +797,62 @@ table.cmp td[data-l="Détail"]{white-space:nowrap}
 
 <h3 id="s4-3">4.3 Du besoin métier au produit de données</h3>
 <p>Chaque produit de données du Gold, comme celui de l'exemple ci-dessus, appartient à un domaine. Sa création suit le même circuit, sur le pipeline commun (<a href="#batch">section 6</a>).</p>
+<div class="figure" role="img" aria-label="Frise du besoin au produit de données">
+<div class="wrap" style="margin:0">
+<svg viewBox="0 0 1060 170" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="be-k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="head"/></marker><marker id="be-k-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="head-d"/></marker></defs>
+  <rect x="15" y="30" width="152" height="120" rx="9" class="box"/>
+  <svg x="78" y="40" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-22" x="5" y="5" width="22" height="22"/></svg>
+  <text x="91" y="92" text-anchor="middle" class="lbl" style="font-size:13px">Besoin exprimé</text>
+  <text x="91" y="112" text-anchor="middle" class="sm" style="font-size:11px">par ticket: usage,</text>
+  <text x="91" y="128" text-anchor="middle" class="sm" style="font-size:11px">utilisateurs, fraîcheur</text>
+  <path d="M167,90 L189,90" class="ar" marker-end="url(#be-k)"/>
+  <g class="stepb stepl" data-go="bes-1" role="link" tabindex="0"><circle cx="17" cy="32" r="11" style="fill:var(--accent)"/><text x="17" y="36.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">1</text></g>
+  <rect x="191" y="30" width="152" height="120" rx="9" class="box"/>
+  <svg x="254" y="40" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-22" x="5" y="5" width="22" height="22"/></svg>
+  <text x="267" y="92" text-anchor="middle" class="lbl" style="font-size:13px">Atelier court</text>
+  <text x="267" y="112" text-anchor="middle" class="sm" style="font-size:11px">domaine, sponsor</text>
+  <text x="267" y="128" text-anchor="middle" class="sm" style="font-size:11px">et définitions</text>
+  <path d="M343,90 L365,90" class="ar" marker-end="url(#be-k)"/>
+  <g class="stepb stepl" data-go="bes-2" role="link" tabindex="0"><circle cx="193" cy="32" r="11" style="fill:var(--accent)"/><text x="193" y="36.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">2</text></g>
+  <rect x="367" y="30" width="152" height="120" rx="9" class="bb"/>
+  <svg x="430" y="40" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><path transform="translate(6 6) scale(0.833333)" d="M17.9004 9.3763a8.1488 8.1488 0 0 0-3.0421-3.1206l1.7708.8385a10.2874 10.2874 0 0 1 3.74 3.0007l3.234-5.9295a2.8546 2.8546 0 0 0-.0611-2.9604C22.7566.0371 21.2112-.3409 19.9754.3327l-5.8749 3.2101a4.3612 4.3612 0 0 1-4.1761 0L4.1769.408a2.8545 2.8545 0 0 0-2.9592.0632c-1.1673.7853-1.5452 2.33-.8723 3.5655L3.55 9.9106a4.3612 4.3612 0 0 1 0 4.1772l-3.1272 5.743a2.86 2.86 0 0 0 .085 2.9974c.794 1.1438 2.3225 1.5054 3.5448.8385l6.0581-3.3049a10.2877 10.2877 0 0 1-3.0051-3.7454l-.8374-1.7708a8.148 8.148 0 0 0 3.1206 3.0421l10.5832 5.779c1.2213.666 2.7481.3055 3.5426-.8363a2.8699 2.8699 0 0 0 .0796-3.0018L17.9004 9.3763zm3.3801-7.7351c.6022 0 1.0904.4882 1.0904 1.0904s-.4882 1.0904-1.0904 1.0904-1.0904-.4882-1.0904-1.0904.4882-1.0904 1.0904-1.0904zM2.7442 3.822c-.6022 0-1.0904-.4882-1.0904-1.0904s.4882-1.0904 1.0904-1.0904 1.0904.4882 1.0904 1.0904S3.3464 3.822 2.7442 3.822zm0 18.5363c-.6022 0-1.0904-.4882-1.0904-1.0904 0-.6022.4882-1.0904 1.0904-1.0904s1.0904.4882 1.0904 1.0904c0 .6022-.4882 1.0904-1.0904 1.0904zm10.3585-11.4489c-1.2008-.0035-2.177.9672-2.1805 2.1679a2.1738 2.1738 0 0 0 .7052 1.6091c-1.4872-.2091-2.5234-1.5843-2.3142-3.0716.2091-1.4872 1.5843-2.5234 3.0716-2.3142a2.7194 2.7194 0 0 1 2.3142 2.3142 2.1623 2.1623 0 0 0-1.5963-.7054zm8.1778 11.4489c-.6022 0-1.0904-.4882-1.0904-1.0904 0-.6022.4882-1.0904 1.0904-1.0904s1.0904.4882 1.0904 1.0904c0 .6022-.4882 1.0904-1.0904 1.0904z" fill="#FF694B"/></svg>
+  <text x="443" y="92" text-anchor="middle" class="lbl" style="font-size:13px">Modèle et contrat</text>
+  <text x="443" y="112" text-anchor="middle" class="sm" style="font-size:11px">par l'Analytics Engineer,</text>
+  <text x="443" y="128" text-anchor="middle" class="sm" style="font-size:11px">avec le sponsor</text>
+  <path d="M519,90 L541,90" class="ar" marker-end="url(#be-k)"/>
+  <g class="stepb stepl" data-go="bes-3" role="link" tabindex="0"><circle cx="369" cy="32" r="11" style="fill:var(--accent)"/><text x="369" y="36.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">3</text></g>
+  <rect x="543" y="30" width="152" height="120" rx="9" class="box"/>
+  <svg x="606" y="40" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><g transform="translate(-219.7 -452.0)"><path transform="translate(225.7 458) scale(0.833333)" d="M10.984 13.836a.5.5 0 0 1-.353-.146l-.745-.743a.5.5 0 1 1 .706-.708l.392.391 1.181-1.18a.5.5 0 0 1 .708.707l-1.535 1.533a.504.504 0 0 1-.354.146zm9.353-.147l1.534-1.532a.5.5 0 0 0-.707-.707l-1.181 1.18-.392-.391a.5.5 0 1 0-.706.708l.746.743a.497.497 0 0 0 .706-.001zM4.527 7.452l2.557-1.585A1 1 0 0 0 7.09 4.17L4.533 2.56A1 1 0 0 0 3 3.406v3.196a1.001 1.001 0 0 0 1.527.85zm2.03-2.436L4 6.602V3.406l2.557 1.61zM24 12.5c0 1.93-1.57 3.5-3.5 3.5a3.503 3.503 0 0 1-3.46-3h-2.08a3.503 3.503 0 0 1-3.46 3 3.502 3.502 0 0 1-3.46-3h-.558c-.972 0-1.85-.399-2.482-1.042V17c0 1.654 1.346 3 3 3h.04c.244-1.693 1.7-3 3.46-3 1.93 0 3.5 1.57 3.5 3.5S13.43 24 11.5 24a3.502 3.502 0 0 1-3.46-3H8c-2.206 0-4-1.794-4-4V9.899A5.008 5.008 0 0 1 0 5c0-2.757 2.243-5 5-5s5 2.243 5 5a5.005 5.005 0 0 1-4.952 4.998A2.482 2.482 0 0 0 7.482 12h.558c.244-1.693 1.7-3 3.46-3a3.502 3.502 0 0 1 3.46 3h2.08a3.503 3.503 0 0 1 3.46-3c1.93 0 3.5 1.57 3.5 3.5zm-15 8c0 1.378 1.122 2.5 2.5 2.5s2.5-1.122 2.5-2.5-1.122-2.5-2.5-2.5S9 19.122 9 20.5zM5 9c2.206 0 4-1.794 4-4S7.206 1 5 1 1 2.794 1 5s1.794 4 4 4zm9 3.5c0-1.378-1.122-2.5-2.5-2.5S9 11.122 9 12.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5zm9 0c0-1.378-1.122-2.5-2.5-2.5S18 11.122 18 12.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5zm-13 8a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0zm2 0a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0zm12 0c0 1.93-1.57 3.5-3.5 3.5a3.503 3.503 0 0 1-3.46-3.002c-.007.001-.013.005-.021.005l-.506.017h-.017a.5.5 0 0 1-.016-.999l.506-.017c.018-.002.035.006.052.007A3.503 3.503 0 0 1 20.5 17c1.93 0 3.5 1.57 3.5 3.5zm-1 0c0-1.378-1.122-2.5-2.5-2.5S18 19.122 18 20.5s1.122 2.5 2.5 2.5 2.5-1.122 2.5-2.5z" fill="#2088FF"/></g></svg>
+  <text x="619" y="92" text-anchor="middle" class="lbl" style="font-size:13px">Revue et CI</text>
+  <text x="619" y="112" text-anchor="middle" class="sm" style="font-size:11px">revue du domaine,</text>
+  <text x="619" y="128" text-anchor="middle" class="sm" style="font-size:11px">construction et tests</text>
+  <path d="M695,90 L717,90" class="ar" marker-end="url(#be-k)"/>
+  <g class="stepb stepl" data-go="bes-4" role="link" tabindex="0"><circle cx="545" cy="32" r="11" style="fill:var(--accent)"/><text x="545" y="36.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">4</text></g>
+  <rect x="719" y="30" width="152" height="120" rx="9" class="bg"/>
+  <svg x="782" y="40" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><g transform="translate(-228.2 -214.0)"><use href="#sym-5" x="233.2" y="219" width="22" height="22"/></g></svg>
+  <text x="795" y="92" text-anchor="middle" class="lbl" style="font-size:13px">Mise en production</text>
+  <text x="795" y="112" text-anchor="middle" class="sm" style="font-size:11px">job dbt Cloud lancé par</text>
+  <text x="795" y="128" text-anchor="middle" class="sm" style="font-size:11px">Airflow, publié au catalogue</text>
+  <path d="M871,90 L893,90" class="ar" marker-end="url(#be-k)"/>
+  <g class="stepb stepl" data-go="bes-5" role="link" tabindex="0"><circle cx="721" cy="32" r="11" style="fill:var(--accent)"/><text x="721" y="36.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">5</text></g>
+  <rect x="895" y="30" width="152" height="120" rx="9" class="box"/>
+  <svg x="958" y="40" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><g transform="translate(-494.1 -1245)"><use href="#sym-7" x="499.1" y="1250" width="22" height="22"/></g></svg>
+  <text x="971" y="92" text-anchor="middle" class="lbl" style="font-size:13px">Droits d'accès</text>
+  <text x="971" y="112" text-anchor="middle" class="sm" style="font-size:11px">par étiquettes</text>
+  <text x="971" y="128" text-anchor="middle" class="sm" style="font-size:11px">Lake Formation</text>
+  <g class="stepb stepl" data-go="bes-6" role="link" tabindex="0"><circle cx="897" cy="32" r="11" style="fill:var(--accent)"/><text x="897" y="36.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">6</text></g>
+</svg>
+</div>
+<p class="cap">Les six étapes du circuit. Chaque numéro renvoie à l'étape de même numéro ci-dessous.</p>
+</div>
 <ol class="steps">
-  <li>Le métier exprime son besoin par un ticket (usage, utilisateurs, fraîcheur attendue).</li>
-  <li>Un atelier court fixe le domaine propriétaire, le sponsor et les définitions des indicateurs.</li>
-  <li>L'Analytics Engineer du domaine construit le modèle dbt à partir d'un gabarit et écrit le contrat avec le sponsor.</li>
-  <li>La pull request passe la revue du domaine et la CI (construction ciblée, tests, contrat).</li>
-  <li>Le job dbt Cloud lancé par Airflow met le modèle en production. Il est publié dans dbt docs et DataHub.</li>
-  <li>Les droits sont donnés par étiquettes Lake Formation.</li>
+  <li id="bes-1">Le métier exprime son besoin par un ticket (usage, utilisateurs, fraîcheur attendue).</li>
+  <li id="bes-2">Un atelier court fixe le domaine propriétaire, le sponsor et les définitions des indicateurs.</li>
+  <li id="bes-3">L'Analytics Engineer du domaine construit le modèle dbt à partir d'un gabarit et écrit le contrat avec le sponsor.</li>
+  <li id="bes-4">La pull request passe la revue du domaine et la CI (construction ciblée, tests, contrat).</li>
+  <li id="bes-5">Le job dbt Cloud lancé par Airflow met le modèle en production. Il est publié dans dbt docs et DataHub.</li>
+  <li id="bes-6">Les droits sont donnés par étiquettes Lake Formation.</li>
 </ol>
 
 <h3 id="s4-4">4.4 Gouvernance fédérée par domaine</h3>
@@ -1495,107 +1549,141 @@ table.cmp td[data-l="Détail"]{white-space:nowrap}
 
 <!-- ============================================================ -->
 <h2 id="modelisation">7. Modélisation des données</h2>
-<p>Le Gold est modélisé en SQL dans dbt par l'Analytics Engineer de chaque domaine, dans un cadre commun. Le grain de chaque table est annoncé en une phrase avant sa construction (« une ligne = un paiement »), et une table n'a qu'un grain. Ces règles sont des choix d'Artify (<a href="#d12">ADR-021</a>), pas des lois générales.</p>
-<h3 id="s7-1">7.1 Du Silver aux usages: un schéma par besoin</h3>
+<p>Le Gold est le contrat entre la plateforme et les métiers. Sa modélisation suit un cadre commun fixé par l'architecte data (<a href="#d12">ADR-021</a>), avec trois objectifs: un chiffre a une seule définition, il se croise d'un domaine à l'autre, et sa lecture sur Athena coûte peu. Dans ce cadre, l'Analytics Engineer de chaque domaine écrit les modèles en SQL dans dbt.</p>
+<h3 id="s7-1">7.1 Le modèle en un schéma</h3>
 <div class="figure" role="img" aria-label="Schéma de la modélisation">
 <div class="wrap" style="margin:0">
-<svg viewBox="0 0 1060 452" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 1060 500" xmlns="http://www.w3.org/2000/svg">
   <defs><marker id="mo-k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="head"/></marker></defs>
   <text x="14" y="22" class="zone">SILVER</text>
-  <text x="212" y="22" class="zone" style="fill:var(--gd)">GOLD · UNE ÉTOILE PAR DOMAINE</text>
-  <text x="850" y="22" class="zone">USAGES</text>
-  <rect x="200" y="34" width="550" height="404" rx="14" fill="none" stroke="var(--gd)" stroke-width="1.5" stroke-dasharray="6 4"/>
-  <rect x="14" y="120" width="150" height="130" rx="9" class="sv"/>
-  <svg x="75" y="128" width="28" height="28" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><g transform="translate(-484.0 -214.0)"><use href="#ico-iceberg" x="488" y="218"/></g></svg><text x="89" y="168" text-anchor="middle" class="sm" style="font-size:11px">Iceberg</text>
-  <text x="89" y="192" text-anchor="middle" class="lbl" style="font-size:14px">Une table</text>
-  <text x="89" y="210" text-anchor="middle" class="lbl" style="font-size:14px">par objet source</text>
-  <text x="89" y="232" text-anchor="middle" class="sm" style="font-size:12px">propre et typée</text>
-  <path d="M164,185 L198,185" class="ar" marker-end="url(#mo-k)"/>
-  <svg x="167" y="148" width="28" height="28" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><path transform="translate(6 6) scale(0.833333)" d="M17.9004 9.3763a8.1488 8.1488 0 0 0-3.0421-3.1206l1.7708.8385a10.2874 10.2874 0 0 1 3.74 3.0007l3.234-5.9295a2.8546 2.8546 0 0 0-.0611-2.9604C22.7566.0371 21.2112-.3409 19.9754.3327l-5.8749 3.2101a4.3612 4.3612 0 0 1-4.1761 0L4.1769.408a2.8545 2.8545 0 0 0-2.9592.0632c-1.1673.7853-1.5452 2.33-.8723 3.5655L3.55 9.9106a4.3612 4.3612 0 0 1 0 4.1772l-3.1272 5.743a2.86 2.86 0 0 0 .085 2.9974c.794 1.1438 2.3225 1.5054 3.5448.8385l6.0581-3.3049a10.2877 10.2877 0 0 1-3.0051-3.7454l-.8374-1.7708a8.148 8.148 0 0 0 3.1206 3.0421l10.5832 5.779c1.2213.666 2.7481.3055 3.5426-.8363a2.8699 2.8699 0 0 0 .0796-3.0018L17.9004 9.3763zm3.3801-7.7351c.6022 0 1.0904.4882 1.0904 1.0904s-.4882 1.0904-1.0904 1.0904-1.0904-.4882-1.0904-1.0904.4882-1.0904 1.0904-1.0904zM2.7442 3.822c-.6022 0-1.0904-.4882-1.0904-1.0904s.4882-1.0904 1.0904-1.0904 1.0904.4882 1.0904 1.0904S3.3464 3.822 2.7442 3.822zm0 18.5363c-.6022 0-1.0904-.4882-1.0904-1.0904 0-.6022.4882-1.0904 1.0904-1.0904s1.0904.4882 1.0904 1.0904c0 .6022-.4882 1.0904-1.0904 1.0904zm10.3585-11.4489c-1.2008-.0035-2.177.9672-2.1805 2.1679a2.1738 2.1738 0 0 0 .7052 1.6091c-1.4872-.2091-2.5234-1.5843-2.3142-3.0716.2091-1.4872 1.5843-2.5234 3.0716-2.3142a2.7194 2.7194 0 0 1 2.3142 2.3142 2.1623 2.1623 0 0 0-1.5963-.7054zm8.1778 11.4489c-.6022 0-1.0904-.4882-1.0904-1.0904 0-.6022.4882-1.0904 1.0904-1.0904s1.0904.4882 1.0904 1.0904c0 .6022-.4882 1.0904-1.0904 1.0904z" fill="#FF694B"/></svg>
-  <text x="300" y="58" text-anchor="middle" class="sm" style="font-size:12px;font-weight:600">Domaine A</text>
-  <text x="650" y="58" text-anchor="middle" class="sm" style="font-size:12px;font-weight:600">Domaine B</text>
-  <path d="M300,116 L300,160 M300,222 L300,264 M375,180 L410,116 M375,204 L410,264 M650,116 L650,160 M650,222 L650,264 M575,180 L540,116 M575,204 L540,264" style="stroke:var(--muted);stroke-width:1.5;fill:none"/>
-  <rect x="235" y="68" width="130" height="48" rx="9" class="box"/>
-  <text x="300.0" y="89" text-anchor="middle" class="lbl" style="font-size:14px">dim_…</text>
-  <text x="300.0" y="106" text-anchor="middle" class="sm" style="font-size:11px">propre au domaine</text>
-  <rect x="410" y="68" width="130" height="48" rx="9" class="box" style="stroke:var(--accent);stroke-width:2"/>
-  <text x="475.0" y="89" text-anchor="middle" class="lbl" style="font-size:14px">dim_…</text>
-  <text x="475.0" y="106" text-anchor="middle" class="sm" style="font-size:11px;fill:var(--accent);font-weight:600">partagée</text>
-  <rect x="585" y="68" width="130" height="48" rx="9" class="box"/>
-  <text x="650.0" y="89" text-anchor="middle" class="lbl" style="font-size:14px">dim_…</text>
-  <text x="650.0" y="106" text-anchor="middle" class="sm" style="font-size:11px">propre au domaine</text>
-  <rect x="225" y="160" width="150" height="62" rx="9" class="gd"/>
-  <text x="300" y="186" text-anchor="middle" class="lbl" style="font-size:15px">fct_…</text>
-  <text x="300" y="206" text-anchor="middle" class="sm" style="font-size:12px">une ligne = un fait</text>
-  <rect x="575" y="160" width="150" height="62" rx="9" class="gd"/>
-  <text x="650" y="186" text-anchor="middle" class="lbl" style="font-size:15px">fct_…</text>
-  <text x="650" y="206" text-anchor="middle" class="sm" style="font-size:12px">un seul grain par table</text>
-  <rect x="235" y="264" width="130" height="48" rx="9" class="box"/>
-  <text x="300.0" y="285" text-anchor="middle" class="lbl" style="font-size:14px">dim_…</text>
-  <text x="300.0" y="302" text-anchor="middle" class="sm" style="font-size:11px">propre au domaine</text>
-  <rect x="410" y="264" width="130" height="48" rx="9" class="box" style="stroke:var(--accent);stroke-width:2"/>
-  <text x="475.0" y="285" text-anchor="middle" class="lbl" style="font-size:14px">dim_…</text>
-  <text x="475.0" y="302" text-anchor="middle" class="sm" style="font-size:11px;fill:var(--accent);font-weight:600">partagée</text>
-  <rect x="585" y="264" width="130" height="48" rx="9" class="box"/>
-  <text x="650.0" y="285" text-anchor="middle" class="lbl" style="font-size:14px">dim_…</text>
-  <text x="650.0" y="302" text-anchor="middle" class="sm" style="font-size:11px">propre au domaine</text>
-  <text x="475" y="150" text-anchor="middle" class="sm" style="font-size:11px">les dimensions partagées</text>
-  <text x="475" y="166" text-anchor="middle" class="sm" style="font-size:11px">relient les deux étoiles:</text>
-  <text x="475" y="182" text-anchor="middle" class="sm" style="font-size:11px">on peut croiser</text>
-  <text x="475" y="198" text-anchor="middle" class="sm" style="font-size:11px">les chiffres des domaines</text>
-  <path d="M475,312 L475,346" class="ar" marker-end="url(#mo-k)"/>
-  <text x="485" y="334" class="sm" style="font-size:11px">dérivée par dbt</text>
-  <rect x="225" y="348" width="500" height="68" rx="9" class="bb"/>
-  <text x="475" y="376" text-anchor="middle" class="lbl" style="font-size:14px">Table large</text>
-  <text x="475" y="396" text-anchor="middle" class="sm" style="font-size:12px">une ligne par individu et par date, reconstruite à chaque chargement</text>
-  <rect x="850" y="110" width="196" height="150" rx="9" class="bg"/>
-  <svg x="934" y="120" width="28" height="28" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><g transform="translate(-879.0 -50.0)"><use href="#ico-powerbi" x="885" y="56" width="20" height="20"/>
-  </g></svg><text x="948" y="160" text-anchor="middle" class="sm" style="font-size:11px">Power BI</text>
-  <text x="948" y="188" text-anchor="middle" class="lbl" style="font-size:14px">Tableaux de bord</text>
-  <text x="948" y="208" text-anchor="middle" class="sm" style="font-size:12px">lisent les étoiles,</text>
-  <text x="948" y="224" text-anchor="middle" class="sm" style="font-size:12px">filtrent par les dimensions</text>
-  <rect x="850" y="330" width="196" height="104" rx="9" class="bb"/>
-  <svg x="934" y="338" width="28" height="28" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><use href="#sym-4" x="5" y="5" width="22" height="22"/></svg><text x="948" y="378" text-anchor="middle" class="sm" style="font-size:11px">SageMaker</text>
-  <text x="948" y="404" text-anchor="middle" class="lbl" style="font-size:14px">Applications ML</text>
-  <text x="948" y="422" text-anchor="middle" class="sm" style="font-size:12px">lisent la table large</text>
-  <path d="M750,185 L782,185" class="ar" marker-end="url(#mo-k)"/>
-  <svg x="786" y="171" width="28" height="28" viewBox="689.0 124.0 32 32"><rect x="689" y="124" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><use href="#sym-23" x="694" y="129" width="22" height="22"/></svg><text x="800" y="214" text-anchor="middle" class="sm" style="font-size:11px">Athena</text>
-  <path d="M814,185 L848,185" class="ar" marker-end="url(#mo-k)"/>
-  <path d="M725,382 L848,382" class="ar" marker-end="url(#mo-k)"/>
+  <text x="212" y="22" class="zone" style="fill:var(--gd)">GOLD · MODÉLISÉ POUR LES USAGES</text>
+  <text x="884" y="22" class="zone">USAGES</text>
+  <rect x="200" y="34" width="612" height="380" rx="14" fill="none" stroke="var(--gd)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <rect x="14" y="130" width="140" height="140" rx="9" class="sv"/>
+  <svg x="70" y="140" width="28" height="28" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><g transform="translate(-484.0 -214.0)"><use href="#ico-iceberg" x="488" y="218"/></g></svg>
+  <text x="84" y="182" text-anchor="middle" class="sm" style="font-size:11px">Iceberg</text>
+  <text x="84" y="208" text-anchor="middle" class="lbl" style="font-size:14px">Une table</text>
+  <text x="84" y="226" text-anchor="middle" class="lbl" style="font-size:14px">par objet source</text>
+  <text x="84" y="250" text-anchor="middle" class="sm" style="font-size:12px">propre et typée</text>
+  <path d="M154,200 L198,200" class="ar" marker-end="url(#mo-k)"/>
+  <svg x="162" y="162" width="28" height="28" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><path transform="translate(6 6) scale(0.833333)" d="M17.9004 9.3763a8.1488 8.1488 0 0 0-3.0421-3.1206l1.7708.8385a10.2874 10.2874 0 0 1 3.74 3.0007l3.234-5.9295a2.8546 2.8546 0 0 0-.0611-2.9604C22.7566.0371 21.2112-.3409 19.9754.3327l-5.8749 3.2101a4.3612 4.3612 0 0 1-4.1761 0L4.1769.408a2.8545 2.8545 0 0 0-2.9592.0632c-1.1673.7853-1.5452 2.33-.8723 3.5655L3.55 9.9106a4.3612 4.3612 0 0 1 0 4.1772l-3.1272 5.743a2.86 2.86 0 0 0 .085 2.9974c.794 1.1438 2.3225 1.5054 3.5448.8385l6.0581-3.3049a10.2877 10.2877 0 0 1-3.0051-3.7454l-.8374-1.7708a8.148 8.148 0 0 0 3.1206 3.0421l10.5832 5.779c1.2213.666 2.7481.3055 3.5426-.8363a2.8699 2.8699 0 0 0 .0796-3.0018L17.9004 9.3763zm3.3801-7.7351c.6022 0 1.0904.4882 1.0904 1.0904s-.4882 1.0904-1.0904 1.0904-1.0904-.4882-1.0904-1.0904.4882-1.0904 1.0904-1.0904zM2.7442 3.822c-.6022 0-1.0904-.4882-1.0904-1.0904s.4882-1.0904 1.0904-1.0904 1.0904.4882 1.0904 1.0904S3.3464 3.822 2.7442 3.822zm0 18.5363c-.6022 0-1.0904-.4882-1.0904-1.0904 0-.6022.4882-1.0904 1.0904-1.0904s1.0904.4882 1.0904 1.0904c0 .6022-.4882 1.0904-1.0904 1.0904zm10.3585-11.4489c-1.2008-.0035-2.177.9672-2.1805 2.1679a2.1738 2.1738 0 0 0 .7052 1.6091c-1.4872-.2091-2.5234-1.5843-2.3142-3.0716.2091-1.4872 1.5843-2.5234 3.0716-2.3142a2.7194 2.7194 0 0 1 2.3142 2.3142 2.1623 2.1623 0 0 0-1.5963-.7054zm8.1778 11.4489c-.6022 0-1.0904-.4882-1.0904-1.0904 0-.6022.4882-1.0904 1.0904-1.0904s1.0904.4882 1.0904 1.0904c0 .6022-.4882 1.0904-1.0904 1.0904z" fill="#FF694B"/></svg>
+  <rect x="210" y="56" width="188" height="104" rx="9" class="gd"/>
+  <text x="304" y="88" text-anchor="middle" class="lbl" style="font-size:14px">Usage</text>
+  <text x="304" y="116" text-anchor="middle" class="sm" style="font-size:12px">visionnages, qualité</text>
+  <text x="304" y="132" text-anchor="middle" class="sm" style="font-size:12px">de diffusion, droits</text>
+  <text x="304" y="151" text-anchor="middle" class="sm" style="font-size:11px;font-family:ui-monospace,Menlo,monospace">tables fct_…</text>
+  <path d="M304,160 L304,200" style="stroke:var(--accent);stroke-width:1.6;fill:none"/>
+  <rect x="411" y="56" width="188" height="104" rx="9" class="gd"/>
+  <text x="505" y="88" text-anchor="middle" class="lbl" style="font-size:14px">Croissance</text>
+  <text x="505" y="116" text-anchor="middle" class="sm" style="font-size:12px">paiements, abonnements,</text>
+  <text x="505" y="132" text-anchor="middle" class="sm" style="font-size:12px">publicité, achats à l'acte</text>
+  <text x="505" y="151" text-anchor="middle" class="sm" style="font-size:11px;font-family:ui-monospace,Menlo,monospace">tables fct_…</text>
+  <path d="M505,160 L505,200" style="stroke:var(--accent);stroke-width:1.6;fill:none"/>
+  <rect x="612" y="56" width="188" height="104" rx="9" class="gd"/>
+  <text x="706" y="80" text-anchor="middle" class="lbl" style="font-size:13px">Acquisition de contenus</text>
+  <text x="706" y="96" text-anchor="middle" class="lbl" style="font-size:13px">et B2B</text>
+  <text x="706" y="116" text-anchor="middle" class="sm" style="font-size:12px">partage des revenus</text>
+  <text x="706" y="132" text-anchor="middle" class="sm" style="font-size:12px">par producteur, mensuel</text>
+  <text x="706" y="151" text-anchor="middle" class="sm" style="font-size:11px;font-family:ui-monospace,Menlo,monospace">tables fct_…</text>
+  <path d="M706,160 L706,200" style="stroke:var(--accent);stroke-width:1.6;fill:none"/>
+  <rect x="210" y="200" width="590" height="84" rx="10" class="box" style="stroke:var(--accent);stroke-width:2"/>
+  <text x="505" y="224" text-anchor="middle" class="lbl" style="font-size:13px;fill:var(--accent)">Dimensions conformes (dim_…), partagées entre les domaines</text>
+  <rect x="227" y="238" width="100" height="30" rx="7" class="box" style="stroke:var(--accent);stroke-width:1.4"/>
+  <text x="277" y="258" text-anchor="middle" class="lbl" style="font-size:13px">Date</text>
+  <rect x="341" y="238" width="100" height="30" rx="7" class="box" style="stroke:var(--accent);stroke-width:1.4"/>
+  <text x="391" y="258" text-anchor="middle" class="lbl" style="font-size:13px">Pays</text>
+  <rect x="455" y="238" width="100" height="30" rx="7" class="box" style="stroke:var(--accent);stroke-width:1.4"/>
+  <text x="505" y="258" text-anchor="middle" class="lbl" style="font-size:13px">Client</text>
+  <rect x="569" y="238" width="100" height="30" rx="7" class="box" style="stroke:var(--accent);stroke-width:1.4"/>
+  <text x="619" y="258" text-anchor="middle" class="lbl" style="font-size:13px">Contenu</text>
+  <rect x="683" y="238" width="100" height="30" rx="7" class="box" style="stroke:var(--accent);stroke-width:1.4"/>
+  <text x="733" y="258" text-anchor="middle" class="lbl" style="font-size:13px">Produit</text>
+  <path d="M505,284 L505,326" class="ar" marker-end="url(#mo-k)"/>
+  <text x="515" y="310" text-anchor="start" class="sm" style="font-size:11px">dérivées par dbt</text>
+  <rect x="210" y="328" width="590" height="66" rx="9" class="gd"/>
+  <text x="505" y="354" text-anchor="middle" class="lbl" style="font-size:14px">Tables larges pour le ML (domaine Plateforme et IA)</text>
+  <text x="505" y="376" text-anchor="middle" class="sm" style="font-size:12px">une ligne par individu et par date, reconstruites à chaque chargement</text>
+  <path d="M812,170 L830,170" class="ar"/>
+  <svg x="832" y="156" width="28" height="28" viewBox="689.0 124.0 32 32"><rect x="689" y="124" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><use href="#sym-23" x="694" y="129" width="22" height="22"/></svg>
+  <text x="846" y="200" text-anchor="middle" class="sm" style="font-size:11px">Athena</text>
+  <path d="M860,170 L882,170" class="ar" marker-end="url(#mo-k)"/>
+  <rect x="884" y="110" width="162" height="120" rx="9" class="bg"/>
+  <svg x="951" y="118" width="28" height="28" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><g transform="translate(-879.0 -50.0)"><use href="#ico-powerbi" x="885" y="56" width="20" height="20"/>
+  </g></svg>
+  <text x="965" y="160" text-anchor="middle" class="sm" style="font-size:11px">Power BI</text>
+  <text x="965" y="184" text-anchor="middle" class="lbl" style="font-size:14px">Tableaux de bord</text>
+  <text x="965" y="204" text-anchor="middle" class="sm" style="font-size:12px">lisent les étoiles,</text>
+  <text x="965" y="220" text-anchor="middle" class="sm" style="font-size:12px">en mode Import</text>
+  <path d="M800,361 L882,361" class="ar" marker-end="url(#mo-k)"/>
+  <rect x="884" y="310" width="162" height="100" rx="9" class="bb"/>
+  <svg x="951" y="318" width="28" height="28" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><use href="#sym-4" x="5" y="5" width="22" height="22"/></svg>
+  <text x="965" y="358" text-anchor="middle" class="sm" style="font-size:11px">SageMaker</text>
+  <text x="965" y="382" text-anchor="middle" class="lbl" style="font-size:14px">Applications ML</text>
+  <text x="965" y="400" text-anchor="middle" class="sm" style="font-size:11px">lisent les tables larges</text>
+  <rect x="14" y="432" width="1032" height="56" rx="10" class="bgr"/>
+  <text x="48" y="465" text-anchor="start" class="zone" style="font-size:12px">CADRE COMMUN</text>
+  <svg x="190" y="446" width="28" height="28" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-13" x="5" y="5" width="22" height="22"/></svg>
+  <text x="228" y="456" text-anchor="start" class="lbl" style="font-size:13px">Lead Data Architect</text>
+  <text x="228" y="474" text-anchor="start" class="sm" style="font-size:12px">fixe les règles communes (ADR-021)</text>
+  <svg x="480" y="446" width="28" height="28" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-22" x="5" y="5" width="22" height="22"/></svg>
+  <text x="518" y="456" text-anchor="start" class="lbl" style="font-size:13px">Analytics Engineers</text>
+  <text x="518" y="474" text-anchor="start" class="sm" style="font-size:12px">écrivent les modèles dans dbt</text>
+  <svg x="760" y="446" width="28" height="28" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-22" x="5" y="5" width="22" height="22"/></svg>
+  <text x="798" y="456" text-anchor="start" class="lbl" style="font-size:13px">Sponsors des domaines</text>
+  <text x="798" y="474" text-anchor="start" class="sm" style="font-size:12px">valident les définitions</text>
+  <g class="stepb stepl" data-go="mod-1" role="link" tabindex="0"><circle cx="176" cy="222" r="11" style="fill:var(--accent)"/><text x="176" y="226.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">1</text></g>
+  <g class="stepb stepl" data-go="mod-2" role="link" tabindex="0"><circle cx="800" cy="56" r="11" style="fill:var(--accent)"/><text x="800" y="60.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">2</text></g>
+  <g class="stepb stepl" data-go="mod-3" role="link" tabindex="0"><circle cx="800" cy="200" r="11" style="fill:var(--accent)"/><text x="800" y="204.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">3</text></g>
+  <g class="stepb stepl" data-go="mod-4" role="link" tabindex="0"><circle cx="487" cy="305" r="11" style="fill:var(--accent)"/><text x="487" y="309.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">4</text></g>
+  <g class="stepb stepl" data-go="mod-5" role="link" tabindex="0"><circle cx="871" cy="144" r="11" style="fill:var(--accent)"/><text x="871" y="148.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">5</text></g>
+  <g class="stepb stepl" data-go="mod-6" role="link" tabindex="0"><circle cx="842" cy="343" r="11" style="fill:var(--accent)"/><text x="842" y="347.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">6</text></g>
+  <g class="stepb stepl" data-go="mod-7" role="link" tabindex="0"><circle cx="30" cy="460" r="11" style="fill:var(--accent)"/><text x="30" y="464.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">7</text></g>
 </svg>
 </div>
-<p class="cap">Vue macro, sans nom de table réel. Le Silver garde la structure de chaque source. dbt construit pour chaque domaine une étoile: une table de faits (<code>fct_</code>) entourée de dimensions (<code>dim_</code>). Les dimensions encadrées en bleu sont partagées entre domaines, ce qui permet de croiser leurs chiffres. Les tableaux de bord lisent les étoiles par Athena. Les applications ML lisent une table large, dérivée des étoiles par dbt.</p>
+<p class="cap">Vue macro, sans nom de table réel. Le Silver garde la structure de chaque source. Le Gold réunit les étoiles des domaines, reliées par des dimensions conformes, et les tables larges qui en sont dérivées pour le ML. Chaque numéro renvoie à la ligne de même numéro du tableau ci-dessous.</p>
 </div>
 <div class="wrap"><table>
-<thead><tr><th>Couche ou usage</th><th>Schéma retenu</th><th>Pourquoi</th></tr></thead>
+<thead><tr><th>N°</th><th>Élément</th><th>Ce qui se passe</th><th>À retenir</th></tr></thead>
 <tbody>
-<tr><td>Silver</td><td>Une table par objet source. Normalisation partielle: les tableaux imbriqués de MongoDB deviennent des tables enfants avec la clé du parent.</td><td>Garder la structure de la source, propre et typée, pour l'exploration et le rejeu.</td></tr>
-<tr><td>Gold, tableaux de bord</td><td>Étoile: tables de faits <code>fct_</code> étroites et dimensions <code>dim_</code>, sans flocon. Les genres passent par une table de liaison.</td><td>Lisible par les métiers et les Analytics Engineers. Les dimensions partagées entre domaines permettent de croiser les chiffres.</td></tr>
-<tr><td>Gold, applications ML</td><td>Tables larges dérivées de l'étoile par dbt et reconstruites à chaque chargement, sans écriture manuelle.</td><td>Une ligne par individu et par date, prête à lire, sans réécrire les règles métier.</td></tr>
-<tr><td>Écartés pour la consommation</td><td>3e forme normale, Data Vault</td><td>La 3e forme normale sert les bases transactionnelles. Le Data Vault n'est pas retenu: il ajoute des couches sans besoin d'audit qui le justifie ici.</td></tr>
+<tr id="mod-1"><td><span class="fn">1</span></td><td>Silver vers Gold</td><td>dbt lit le Silver, aligné sur chaque source, et construit le Gold modélisé pour les usages.</td><td>Le Silver garde la structure de la source pour l'exploration et le rejeu. Les tableaux imbriqués de MongoDB y deviennent des tables enfants avec la clé du parent.</td></tr>
+<tr id="mod-2"><td><span class="fn">2</span></td><td>Faits par domaine</td><td>Chaque domaine publie ses tables de faits <code>fct_</code>, au grain annoncé avant la construction.</td><td>Trois types de faits, selon la question métier: des transactions, des photos périodiques et des parcours qui avancent par étapes.</td></tr>
+<tr id="mod-3"><td><span class="fn">3</span></td><td>Dimensions conformes</td><td>Date, pays, client, contenu et produit existent en une seule version, partagée par les domaines qui en ont besoin (<a href="#s7-2">section 7.2</a>).</td><td>Les chiffres de deux domaines se croisent sans retraitement. Pas de flocon: les genres passent par une table de liaison.</td></tr>
+<tr id="mod-4"><td><span class="fn">4</span></td><td>Tables larges</td><td>dbt dérive des étoiles les tables larges du domaine Plateforme et IA, reconstruites à chaque chargement, jamais écrites à la main.</td><td>Les règles métier ne sont écrites qu'une fois. Le ML lit une table prête, sans jointure.</td></tr>
+<tr id="mod-5"><td><span class="fn">5</span></td><td>Tableaux de bord</td><td>Power BI importe les étoiles par Athena, en mode Import (<a href="#s5-5">section 5.5</a>).</td><td>Les dimensions conformes servent de filtres communs à tous les rapports.</td></tr>
+<tr id="mod-6"><td><span class="fn">6</span></td><td>Applications ML</td><td>SageMaker lit les tables larges.</td><td>Une variable n'utilise que des données antérieures à la date de prédiction.</td></tr>
+<tr id="mod-7"><td><span class="fn">7</span></td><td>Cadre commun</td><td>L'architecte data fixe les règles (<a href="#d12">ADR-021</a>). Les Analytics Engineers les appliquent dans dbt. Les sponsors valident les définitions.</td><td>Quatre domaines modélisent de la même façon, sans goulot central.</td></tr>
 </tbody></table></div>
-<h3 id="s7-2">7.2 Principes</h3>
-<ul>
-  <li><b>Le grain d'abord.</b> Ce que représente une ligne est annoncé avant la construction, et une table n'a qu'un grain.</li>
-  <li><b>Trois types de faits, selon la question métier.</b> Des transactions (visionnages, paiements), des photos périodiques (abonnés actifs en fin de mois) et des parcours qui avancent par étapes (achat Pay-Per-View).</li>
-  <li><b>Des dimensions partagées.</b> Les dimensions sont communes aux domaines, ce qui permet de croiser leurs chiffres. Le revenu se somme en euros, au grain de la table.</li>
-  <li><b>Un schéma stable.</b> Un seul schéma pour tous les pays. On ajoute des colonnes, on ne les renomme pas.</li>
-</ul>
-<h3 id="s7-3">7.3 Historisation</h3>
+<h3 id="s7-2">7.2 Dimensions conformes par domaine</h3>
+<p>Cette matrice montre quelles dimensions conformes chaque domaine utilise. C'est elle qui permet de croiser un chiffre de la Croissance et un chiffre de l'Usage par pays, par client ou par contenu.</p>
+<div class="wrap"><table class="bus">
+<thead><tr><th>Domaine</th><th>Faits principaux</th><th>Date</th><th>Pays</th><th>Client</th><th>Contenu</th><th>Produit</th></tr></thead>
+<tbody>
+<tr><td><b>Usage</b></td><td>Sessions de visionnage (transaction), qualité de diffusion (agrégat quotidien), droits de diffusion (photo périodique)</td><td class="c">●</td><td class="c">●</td><td class="c">●</td><td class="c">●</td><td class="c">●</td></tr>
+<tr><td><b>Croissance</b></td><td>Paiements et impressions publicitaires (transactions), abonnés actifs en fin de mois (photo périodique), achat à l'acte (parcours par étapes)</td><td class="c">●</td><td class="c">●</td><td class="c">●</td><td class="c">●</td><td class="c">●</td></tr>
+<tr><td><b>Acquisition de contenus et B2B</b></td><td>Partage des revenus par ayant droit, film et mois (fait mensuel)</td><td class="c">●</td><td class="c"></td><td class="c"></td><td class="c">●</td><td class="c"></td></tr>
+<tr><td><b>Plateforme et IA (hub)</b></td><td>Coûts de la plateforme, tables larges pour le ML</td><td class="c">●</td><td class="c"></td><td class="c">●</td><td class="c"></td><td class="c"></td></tr>
+</tbody></table></div>
+<p>Exemple: les revenus de la Croissance et l'audience de l'Usage se lisent côte à côte, par pays et par contenu, dans un même rapport. Une dimension propre à un domaine, comme l'ayant droit pour l'Acquisition de contenus, reste dans son étoile.</p>
+<h3 id="s7-3">7.3 Règles communes</h3>
+<div class="wrap"><table>
+<thead><tr><th>Règle</th><th>Ce qu'elle garantit</th></tr></thead>
+<tbody>
+<tr><td><b>Le grain d'abord.</b> Ce que représente une ligne est annoncé avant la construction (« une ligne = un paiement »), et une table n'a qu'un grain.</td><td>Pas de double comptage, une lecture sans ambiguïté.</td></tr>
+<tr><td><b>Une seule devise pour les revenus.</b> Le revenu se somme en euros, au taux de la date du paiement.</td><td>Des revenus justes et comparables, quelle que soit la devise du paiement.</td></tr>
+<tr><td><b>Des clés stables.</b> Chaque dimension a une clé de substitution, l'identifiant de la source est conservé à côté, et une ligne « inconnu » recueille les faits sans correspondance.</td><td>Aucun fait perdu, des jointures fiables.</td></tr>
+<tr><td><b>Un schéma stable, pour tous les pays.</b> Un seul schéma, filtré par pays. On ajoute des colonnes, on ne les renomme pas.</td><td>Les rapports ne cassent pas quand le modèle évolue.</td></tr>
+<tr><td><b>Une métrique, une définition.</b> Chaque métrique est définie une seule fois dans dbt, validée par le sponsor et affichée par DataHub (<a href="#catalogue">section 9</a>). La définition d'« abonné actif », qui différait entre le marketing et la finance, a ainsi été alignée.</td><td>Le même chiffre dans tous les rapports.</td></tr>
+<tr><td><b>Un stockage pensé pour Athena.</b> Partitions par date d'événement, jamais par pays ni par titre. Tables pour les produits de données, vues pour l'exploration légère. Les modèles incrémentaux recalculent seulement la période concernée.</td><td>Un volume lu, donc un coût, maîtrisé.</td></tr>
+</tbody></table></div>
+<p>Chaque table Gold a un contrat de structure et des tests dbt qui vérifient ces règles (<a href="#qualite">section 8</a>).</p>
+<h3 id="s7-4">7.4 Historisation</h3>
 <div class="wrap"><table>
 <thead><tr><th>Donnée</th><th>Règle</th><th>Pourquoi</th></tr></thead>
 <tbody>
 <tr><td>Adresse et nom du client</td><td>Type 1: la nouvelle valeur remplace l'ancienne.</td><td>Pas d'usage historique chez Artify.</td></tr>
 <tr><td>Statut de l'abonnement, statut du client, droits par pays, taux de change</td><td>Type 2 par snapshot dbt: une nouvelle ligne avec dates de début et de fin, à chaque changement constaté à l'exécution du snapshot. Les états intermédiaires entre deux exécutions ne sont pas conservés.</td><td>Retrouver la valeur en vigueur à une date donnée.</td></tr>
 <tr><td>Correction tardive d'un fait publié</td><td>Fait financier publié: ligne compensatoire datée du jour, liée à la ligne d'origine. Événement de visionnage tardif au-delà de 24 heures: recalcul ciblé de la période, avec sa date de mise à jour affichée.</td><td>L'historique financier publié ne change pas.</td></tr>
-<tr><td>Versions techniques des tables</td><td>Time travel Iceberg sur 7 jours.</td><td>Retour arrière technique, pas un historique métier.</td></tr>
 </tbody></table></div>
-<h3 id="s7-4">7.4 Stockage et métriques</h3>
-<ul>
-  <li><b>Partitions.</b> Par date d'événement, et non par pays ou par titre, pour limiter le volume lu par Athena.</li>
-  <li><b>Matérialisation.</b> Tables pour les produits de données, vues pour l'exploration légère. Les modèles incrémentaux recalculent seulement la période concernée.</li>
-  <li><b>Métriques.</b> Chaque métrique est définie une seule fois dans dbt. DataHub l'affiche et Power BI l'importe par Athena (<a href="#catalogue">section 9</a>).</li>
-</ul>
 
 <!-- ============================================================ -->
 <h2 id="qualite">8. Qualité des données</h2>
@@ -1928,16 +2016,77 @@ table.cmp td[data-l="Détail"]{white-space:nowrap}
 <p><b>Données personnelles</b></p>
 <p>Environnement de développement alimenté par un échantillon pseudonymisé. Consentement suivi dans une table dédiée.</p>
 <p><b>Droit à l'oubli (RGPD)</b></p>
-<ul>
-  <li>Un DAG mensuel traite les demandes dans les tables Iceberg Bronze, Silver et Gold concernées, y compris les tables dérivées avec identifiants. Objectif de traitement sous un mois à compter de la réception, avec suivi des échéances individuelles et rattrapage des échecs.</li>
-  <li>Après traitement, seuls les identifiants nécessaires à une nouvelle suppression sont conservés pendant trois mois, avec un accès restreint. Le DAG les reprend à son passage suivant pour effacer les réintroductions: c'est une suppression corrective différée, sans blocage systématique à l'ingestion.</li>
+<div class="figure" role="img" aria-label="Schéma du droit à l'oubli">
+<div class="wrap" style="margin:0">
+<svg viewBox="0 0 1060 300" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ro-k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="head"/></marker><marker id="ro-k-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="head-d"/></marker></defs>
+  <text x="14" y="24" text-anchor="start" class="zone" style="font-size:13px">DEMANDE</text>
+  <text x="200" y="24" text-anchor="start" class="zone" style="font-size:13px">TRAITEMENT MENSUEL</text>
+  <text x="652" y="24" text-anchor="start" class="zone" style="font-size:13px">PURGE ET COPIES</text>
+  <rect x="14" y="44" width="150" height="112" rx="9" class="box"/>
+  <svg x="76" y="52" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-13" x="5" y="5" width="22" height="22"/></svg>
+  <text x="89" y="98" text-anchor="middle" class="lbl" style="font-size:14px">Demande</text>
+  <text x="89" y="118" text-anchor="middle" class="sm" style="font-size:12px">reçue par l'application</text>
+  <text x="89" y="136" text-anchor="middle" class="sm" style="font-size:11px">et coordonnée avec le DPO</text>
+  <path d="M164,100 L198,100" class="ar" marker-end="url(#ro-k)"/>
+  <rect x="200" y="44" width="170" height="112" rx="9" class="bg"/>
+  <svg x="272" y="52" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><g transform="translate(-228.2 -214.0)"><use href="#sym-5" x="233.2" y="219" width="22" height="22"/></g></svg>
+  <text x="285" y="98" text-anchor="middle" class="lbl" style="font-size:14px">DAG mensuel</text>
+  <text x="285" y="118" text-anchor="middle" class="sm" style="font-size:12px">suivi des échéances,</text>
+  <text x="285" y="134" text-anchor="middle" class="sm" style="font-size:12px">rattrapage des échecs</text>
+  <path d="M370,100 L404,100" class="ar" marker-end="url(#ro-k)"/>
+  <rect x="406" y="44" width="210" height="112" rx="9" class="box"/>
+  <svg x="498" y="52" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><g transform="translate(-484.0 -214.0)"><use href="#ico-iceberg" x="488" y="218"/></g></svg>
+  <text x="511" y="98" text-anchor="middle" class="lbl" style="font-size:13px">DELETE dans les tables Iceberg</text>
+  <rect x="418" y="112" width="58" height="28" rx="7" class="bz"/>
+  <text x="447" y="131" text-anchor="middle" class="lbl" style="font-size:12px">Bronze</text>
+  <rect x="482" y="112" width="58" height="28" rx="7" class="sv"/>
+  <text x="511" y="131" text-anchor="middle" class="lbl" style="font-size:12px">Silver</text>
+  <rect x="546" y="112" width="58" height="28" rx="7" class="gd"/>
+  <text x="575" y="131" text-anchor="middle" class="lbl" style="font-size:12px">Gold</text>
+  <path d="M616,100 L650,100" class="ar" marker-end="url(#ro-k)"/>
+  <rect x="652" y="44" width="190" height="112" rx="9" class="ba"/>
+  <svg x="734" y="52" width="26" height="26" viewBox="320.6 566.0 32 32"><rect x="320.6" y="566" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><path transform="translate(326.6 572) scale(0.833333)" d="M20.913 13.147l.12-.895c.947.576 1.258.922 1.354 1.071-.16.031-.562.046-1.474-.176zm-2.174 7.988a.547.547 0 0 0-.005.073c0 .084-.207.405-1.124.768a10.28 10.28 0 0 1-1.438.432c-1.405.325-3.128.504-4.853.504-4.612 0-7.412-1.184-7.412-1.704a.547.547 0 0 0-.005-.073L1.81 5.602c.135.078.28.154.432.227.042.02.086.038.128.057.134.062.272.122.417.18l.179.069c.154.058.314.114.478.168.043.013.084.029.13.043.207.065.423.127.646.187l.176.044c.175.044.353.087.534.127a23.414 23.414 0 0 0 .843.17l.121.023c.252.045.508.085.768.122.071.011.144.02.216.03.2.027.4.053.604.077l.24.027c.245.026.49.05.74.07l.081.009c.275.022.552.04.83.056l.233.012c.21.01.422.018.633.025a33.088 33.088 0 0 0 2.795-.026l.232-.011c.278-.016.555-.034.83-.056l.08-.008c.25-.02.497-.045.742-.072l.238-.026c.205-.024.408-.05.609-.077.07-.01.141-.019.211-.03.261-.037.519-.078.772-.122l.111-.02c.215-.04.427-.082.634-.125l.212-.047c.186-.041.368-.085.546-.13l.166-.042c.225-.06.444-.122.654-.189.04-.012.077-.026.115-.038a10.6 10.6 0 0 0 .493-.173c.058-.021.114-.044.17-.066.15-.06.293-.12.43-.185.038-.017.079-.034.116-.052.153-.073.3-.15.436-.228l-.976 7.245c-2.488-.78-5.805-2.292-7.311-3a1.09 1.09 0 0 0-1.088-1.085c-.6 0-1.088.489-1.088 1.088 0 .6.488 1.089 1.088 1.089.196 0 .378-.056.537-.148 1.72.812 5.144 2.367 7.715 3.15zm-7.42-20.047c5.677 0 9.676 1.759 9.75 2.736l-.014.113c-.01.033-.031.067-.048.101-.015.028-.026.057-.047.087-.024.033-.058.068-.09.102-.028.03-.051.06-.084.09-.038.035-.087.07-.133.105-.04.03-.074.06-.119.091-.053.036-.116.071-.177.107-.05.03-.095.06-.15.09-.068.036-.147.073-.222.11-.059.028-.114.057-.177.085-.084.038-.177.074-.268.111-.068.027-.13.054-.203.082-.097.036-.205.072-.31.107-.075.026-.148.053-.228.079-.111.035-.233.069-.35.103-.085.024-.165.05-.253.073-.124.034-.258.065-.389.098-.093.022-.181.046-.278.068-.139.032-.287.061-.433.091-.098.02-.191.041-.293.06-.155.03-.32.057-.482.084-.1.018-.198.036-.302.052-.166.026-.342.048-.515.072-.11.014-.213.03-.325.044-.181.023-.372.041-.56.06-.11.012-.218.025-.332.036-.188.016-.386.029-.58.043-.122.009-.24.02-.364.028-.207.012-.422.02-.635.028-.12.005-.234.012-.354.016a35.605 35.605 0 0 1-2.069 0c-.12-.004-.234-.011-.352-.016-.214-.008-.43-.016-.637-.028-.122-.008-.238-.02-.36-.027-.195-.015-.394-.028-.584-.044-.11-.01-.215-.024-.324-.035-.19-.02-.384-.038-.568-.06l-.315-.044c-.176-.024-.355-.046-.525-.073-.1-.015-.192-.033-.29-.05-.167-.028-.335-.055-.494-.086-.096-.018-.183-.038-.276-.056-.151-.032-.305-.062-.45-.095-.09-.02-.173-.043-.26-.064-.138-.034-.277-.067-.407-.102-.082-.022-.157-.046-.235-.069a11.75 11.75 0 0 1-.368-.108c-.075-.024-.141-.049-.213-.073-.11-.037-.223-.075-.325-.113-.067-.025-.125-.051-.188-.077-.096-.038-.195-.076-.282-.115-.06-.027-.11-.054-.166-.08-.08-.039-.162-.077-.233-.116-.052-.028-.094-.055-.142-.084-.063-.038-.13-.075-.185-.113-.043-.029-.075-.058-.113-.086-.048-.037-.098-.073-.139-.11-.032-.029-.054-.057-.08-.087-.033-.035-.069-.07-.093-.104-.02-.03-.031-.058-.046-.086-.018-.035-.039-.068-.049-.102l-.015-.113c.076-.977 4.074-2.736 9.748-2.736zm12.182 12.124c-.118-.628-.84-1.291-2.31-2.128l.963-7.16a.531.531 0 0 0 .005-.073C22.16 1.581 16.447 0 11.32 0 6.194 0 .482 1.581.482 3.851a.58.58 0 0 0 .005.072L2.819 21.25c.071 2.002 5.236 2.75 8.5 2.75 1.805 0 3.615-.188 5.098-.531.598-.138 1.133-.3 1.592-.48 1.18-.467 1.789-1.053 1.813-1.739l.945-7.018c.557.131 1.016.197 1.389.197.54 0 .902-.137 1.134-.413a.956.956 0 0 0 .21-.804Z" fill="#569A31"/></svg>
+  <text x="747" y="98" text-anchor="middle" class="lbl" style="font-size:14px">Purge physique</text>
+  <text x="747" y="118" text-anchor="middle" class="sm" style="font-size:12px">compaction, snapshots expirés,</text>
+  <text x="747" y="134" text-anchor="middle" class="sm" style="font-size:12px">versions S3 après 14 jours</text>
+  <path d="M842,100 L876,100" class="ar" marker-end="url(#ro-k)"/>
+  <rect x="878" y="44" width="168" height="112" rx="9" class="bg"/>
+  <svg x="949" y="52" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#ico-powerbi" x="5" y="5" width="22" height="22"/></svg>
+  <text x="962" y="98" text-anchor="middle" class="lbl" style="font-size:14px">Modèles Power BI</text>
+  <text x="962" y="118" text-anchor="middle" class="sm" style="font-size:12px">effacement visible après</text>
+  <text x="962" y="134" text-anchor="middle" class="sm" style="font-size:12px">l'actualisation réussie</text>
+  <rect x="200" y="206" width="416" height="70" rx="9" class="box"/>
+  <text x="408" y="234" text-anchor="middle" class="lbl" style="font-size:13px">Identifiants conservés trois mois, accès restreint</text>
+  <text x="408" y="256" text-anchor="middle" class="sm" style="font-size:12px">repris au passage suivant pour effacer les réintroductions</text>
+  <path d="M511,156 L511,204" class="ar" marker-end="url(#ro-k)"/>
+  <text x="519" y="186" text-anchor="start" class="sm" style="font-size:11px">après traitement</text>
+  <path d="M262,206 L262,158" class="ar" marker-end="url(#ro-k)"/>
+  <text x="270" y="186" text-anchor="start" class="sm" style="font-size:11px">passage suivant</text>
+  <rect x="652" y="206" width="394" height="70" rx="9" class="bgr" style="stroke-dasharray:5 4"/>
+  <text x="849" y="232" text-anchor="middle" class="lbl" style="font-size:13px">Hors du DAG mensuel</text>
+  <text x="849" y="252" text-anchor="middle" class="sm" style="font-size:11px">état du détecteur dans DynamoDB effacé par son TTL, rejets S3,</text>
+  <text x="849" y="268" text-anchor="middle" class="sm" style="font-size:11px">copies, journaux et échantillons selon leurs politiques</text>
+  <g class="stepb stepl" data-go="rgpd-1" role="link" tabindex="0"><circle cx="16" cy="46" r="11" style="fill:var(--accent)"/><text x="16" y="50.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">1</text></g>
+  <g class="stepb stepl" data-go="rgpd-2" role="link" tabindex="0"><circle cx="202" cy="46" r="11" style="fill:var(--accent)"/><text x="202" y="50.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">2</text></g>
+  <g class="stepb stepl" data-go="rgpd-3" role="link" tabindex="0"><circle cx="654" cy="46" r="11" style="fill:var(--accent)"/><text x="654" y="50.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">3</text></g>
+  <g class="stepb stepl" data-go="rgpd-4" role="link" tabindex="0"><circle cx="880" cy="46" r="11" style="fill:var(--accent)"/><text x="880" y="50.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">4</text></g>
+  <g class="stepb stepl" data-go="rgpd-5" role="link" tabindex="0"><circle cx="202" cy="208" r="11" style="fill:var(--accent)"/><text x="202" y="212.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">5</text></g>
+  <g class="stepb stepl" data-go="rgpd-6" role="link" tabindex="0"><circle cx="654" cy="208" r="11" style="fill:var(--accent)"/><text x="654" y="212.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">6</text></g>
+</svg>
+</div>
+<p class="cap">Le parcours d'une demande d'effacement. Chaque numéro renvoie au point de même numéro ci-dessous.</p>
+</div>
+<ul class="nlist">
+  <li id="rgpd-1"><span class="fn">1</span> Les demandes sont coordonnées avec l'application et les services externes, et les obligations légales de conservation sont examinées avec le DPO (délégué à la protection des données).</li>
+  <li id="rgpd-2"><span class="fn">2</span> Un DAG mensuel traite les demandes dans les tables Iceberg Bronze, Silver et Gold concernées, y compris les tables dérivées avec identifiants. Objectif de traitement sous un mois à compter de la réception, avec suivi des échéances individuelles et rattrapage des échecs.</li>
+  <li id="rgpd-3"><span class="fn">3</span> Le traitement distingue le DELETE, la réécriture des fichiers (compaction), l'expiration des snapshots et le nettoyage des fichiers devenus inutiles. Les anciennes versions S3 expirent après 14 jours à l'état non courant: la purge physique dépend de ces rétentions et du succès des opérations.</li>
+  <li id="rgpd-4"><span class="fn">4</span> Les modèles Power BI importés contiennent une copie des données. Un effacement dans Iceberg n'y est visible qu'après l'actualisation réussie des modèles concernés, et non immédiatement: la procédure d'effacement doit prévoir cette actualisation et la vérifier.</li>
+  <li id="rgpd-5"><span class="fn">5</span> Après traitement, seuls les identifiants nécessaires à une nouvelle suppression sont conservés pendant trois mois, avec un accès restreint. Le DAG les reprend à son passage suivant pour effacer les réintroductions: c'est une suppression corrective différée, sans blocage systématique à l'ingestion.</li>
   <li>Les demandes sont prises en compte avant toute remise à disposition d'une restauration historique, et la liste de trois mois s'articule avec les possibilités de rejeu et les suppressions aux sources.</li>
-  <li>L'état du détecteur dans DynamoDB est de courte durée: le TTL l'efface après expiration, sans conserver d'historique. Le DAG mensuel ne le traite pas. Une réintroduction corrigée au passage mensuel suivant reste une limite assumée, à valider avec le DPO.</li>
-  <li>Le traitement distingue le DELETE, la réécriture des fichiers (compaction), l'expiration des snapshots et le nettoyage des fichiers devenus inutiles. Les anciennes versions S3 expirent après 14 jours à l'état non courant: la purge physique dépend de ces rétentions et du succès des opérations.</li>
-  <li>Les modèles Power BI importés contiennent une copie des données. Un effacement dans Iceberg n'y est visible qu'après l'actualisation réussie des modèles concernés, et non immédiatement: la procédure d'effacement doit prévoir cette actualisation et la vérifier.</li>
+  <li id="rgpd-6"><span class="fn">6</span> L'état du détecteur dans DynamoDB est de courte durée: le TTL l'efface après expiration, sans conserver d'historique. Le DAG mensuel ne le traite pas. Une réintroduction corrigée au passage mensuel suivant reste une limite assumée, à valider avec le DPO.</li>
   <li>Les rejets techniques S3 sont supprimés après validation de leur retraitement. Les rejets en attente restent concernés par les demandes d'effacement et par une conservation maximale définie dans les procédures.</li>
   <li>Le périmètre inclut aussi les copies brutes, résultats Athena, exports, caches, journaux et échantillons de développement contenant des données personnelles, selon leurs supports et politiques.</li>
-  <li>Les demandes sont coordonnées avec l'application et les services externes, et les obligations légales de conservation sont examinées avec le DPO (délégué à la protection des données).</li>
 </ul>
 <p><b>Limite de périmètre</b></p>
 <p>L'équipe configure les accès et les rétentions des services SaaS utilisés (Airbyte Cloud, dbt Cloud, MongoDB Atlas, Power BI). Grafana, auto-hébergé sur EC2, et la passerelle de données relèvent de sa responsabilité. Le détail est dans le LLD.</p>
@@ -2058,13 +2207,89 @@ table.cmp td[data-l="Détail"]{white-space:nowrap}
     <li>Lineage dans DataHub, par domaine et par propriétaire, pour mesurer l'impact d'un incident ou d'un changement de contrat.</li>
   </ul></div>
 </div>
+<div class="figure" role="img" aria-label="Schéma de la chaîne d'alerte">
+<div class="wrap" style="margin:0">
+<svg viewBox="0 0 1060 360" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="al-k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="head"/></marker><marker id="al-k-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="head-d"/></marker></defs>
+  <text x="14" y="24" text-anchor="start" class="zone" style="font-size:13px">CE QUI EST SURVEILLÉ</text>
+  <text x="310" y="24" text-anchor="start" class="zone" style="font-size:13px">ALERTE</text>
+  <text x="840" y="24" text-anchor="start" class="zone" style="font-size:13px">QUI EST PRÉVENU</text>
+  <rect x="14" y="40" width="250" height="44" rx="9" class="box"/>
+  <svg x="24" y="49" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><g transform="translate(-248.2 -42.0)"><use href="#sym-2" x="253.2" y="47" width="22" height="22"/></g></svg>
+  <svg x="54" y="49" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><g transform="translate(-306.4 -42.0)"><path transform="translate(312.4 48) scale(0.833333)" d="M4.9855 0c-.2941.0031-.5335.2466-.534.5482L4.446 5.456c0 .1451.06.2835.159.3891a.5322.5322 0 0 0 .3806.1562h3.4282l8.197 17.6805a.5365.5365 0 0 0 .4885.3181h5.811c.2969 0 .5426-.2448.5426-.5482V18.544c0-.3035-.2392-.5482-.5425-.5482h-2.0138L12.7394.3153C12.647.124 12.4564 0 12.2452 0h-7.254Zm.5397 1.0907h6.3678l8.16 17.6804a.5365.5365 0 0 0 .4885.3181h1.8178v3.8173H17.437L9.2402 5.226a.536.536 0 0 0-.4885-.318H5.5223Zm2.0137 8.2366c-.2098.0011-.3937.1193-.4857.3096L.6002 23.2133a.5506.5506 0 0 0 .0313.5282.5334.5334 0 0 0 .4544.25h6.169a.5468.5468 0 0 0 .497-.3096l3.38-7.166a.5405.5405 0 0 0-.0029-.4686L8.036 9.637a.5468.5468 0 0 0-.4942-.3096Zm.0057 1.8036 2.488 5.1522-3.1214 6.6206H1.9465Z" fill="#FF9900"/></g></svg>
+  <text x="90" y="67" text-anchor="start" class="lbl" style="font-size:13px">Tracking du lecteur</text>
+  <path d="M264,62 L286,62" class="ar"/>
+  <rect x="14" y="94" width="250" height="44" rx="9" class="box"/>
+  <svg x="24" y="103" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><g transform="translate(-306.4 -42.0)"><path transform="translate(312.4 48) scale(0.833333)" d="M4.9855 0c-.2941.0031-.5335.2466-.534.5482L4.446 5.456c0 .1451.06.2835.159.3891a.5322.5322 0 0 0 .3806.1562h3.4282l8.197 17.6805a.5365.5365 0 0 0 .4885.3181h5.811c.2969 0 .5426-.2448.5426-.5482V18.544c0-.3035-.2392-.5482-.5425-.5482h-2.0138L12.7394.3153C12.647.124 12.4564 0 12.2452 0h-7.254Zm.5397 1.0907h6.3678l8.16 17.6804a.5365.5365 0 0 0 .4885.3181h1.8178v3.8173H17.437L9.2402 5.226a.536.536 0 0 0-.4885-.318H5.5223Zm2.0137 8.2366c-.2098.0011-.3937.1193-.4857.3096L.6002 23.2133a.5506.5506 0 0 0 .0313.5282.5334.5334 0 0 0 .4544.25h6.169a.5468.5468 0 0 0 .497-.3096l3.38-7.166a.5405.5405 0 0 0-.0029-.4686L8.036 9.637a.5468.5468 0 0 0-.4942-.3096Zm.0057 1.8036 2.488 5.1522-3.1214 6.6206H1.9465Z" fill="#FF9900"/></g></svg>
+  <text x="60" y="121" text-anchor="start" class="lbl" style="font-size:13px">Collecte des logs du CDN</text>
+  <path d="M264,116 L286,116" class="ar"/>
+  <rect x="14" y="148" width="250" height="44" rx="9" class="box"/>
+  <svg x="24" y="157" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><g transform="translate(-306.4 -42.0)"><path transform="translate(312.4 48) scale(0.833333)" d="M4.9855 0c-.2941.0031-.5335.2466-.534.5482L4.446 5.456c0 .1451.06.2835.159.3891a.5322.5322 0 0 0 .3806.1562h3.4282l8.197 17.6805a.5365.5365 0 0 0 .4885.3181h5.811c.2969 0 .5426-.2448.5426-.5482V18.544c0-.3035-.2392-.5482-.5425-.5482h-2.0138L12.7394.3153C12.647.124 12.4564 0 12.2452 0h-7.254Zm.5397 1.0907h6.3678l8.16 17.6804a.5365.5365 0 0 0 .4885.3181h1.8178v3.8173H17.437L9.2402 5.226a.536.536 0 0 0-.4885-.318H5.5223Zm2.0137 8.2366c-.2098.0011-.3937.1193-.4857.3096L.6002 23.2133a.5506.5506 0 0 0 .0313.5282.5334.5334 0 0 0 .4544.25h6.169a.5468.5468 0 0 0 .497-.3096l3.38-7.166a.5405.5405 0 0 0-.0029-.4686L8.036 9.637a.5468.5468 0 0 0-.4942-.3096Zm.0057 1.8036 2.488 5.1522-3.1214 6.6206H1.9465Z" fill="#FF9900"/></g></svg>
+  <svg x="54" y="157" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><use href="#sym-21" x="5" y="5" width="22" height="22"/></svg>
+  <text x="90" y="175" text-anchor="start" class="lbl" style="font-size:13px">Lectures simultanées</text>
+  <path d="M264,170 L286,170" class="ar"/>
+  <rect x="14" y="202" width="250" height="44" rx="9" class="box"/>
+  <svg x="24" y="211" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><g transform="translate(-228.2 -214.0)"><use href="#sym-5" x="233.2" y="219" width="22" height="22"/></g></svg>
+  <text x="60" y="229" text-anchor="start" class="lbl" style="font-size:13px">Pipelines Airflow, fraîcheur</text>
+  <path d="M264,224 L286,224" class="ar"/>
+  <path d="M286,62 L286,224" class="ar"/>
+  <path d="M286,143 L308,143" class="ar" marker-end="url(#al-k)"/>
+  <rect x="310" y="88" width="160" height="110" rx="9" class="bg"/>
+  <svg x="377" y="96" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><g transform="translate(-481.5 -284.0)"><path transform="translate(487.5 290) scale(0.833333)" d="M18.454 14.905c0-1.676-1.372-3.039-3.059-3.039-1.686 0-3.058 1.363-3.058 3.039 0 1.675 1.372 3.038 3.058 3.038 1.687 0 3.059-1.363 3.059-3.038Zm.862 0c0 2.147-1.759 3.894-3.92 3.894-2.162 0-3.92-1.747-3.92-3.894 0-2.148 1.758-3.895 3.92-3.895 2.161 0 3.92 1.747 3.92 3.895Zm3.617 5.87-3.004-2.688c-.242.34-.523.649-.834.926l2.999 2.687c.256.23.654.208.885-.046a.623.623 0 0 0-.046-.88Zm-7.538-1.206c2.59 0 4.696-2.092 4.696-4.664 0-2.573-2.106-4.665-4.696-4.665-2.589 0-4.696 2.092-4.696 4.665 0 2.572 2.107 4.664 4.696 4.664Zm8.224 2.658c-.293.323-.7.487-1.107.487a1.49 1.49 0 0 1-.995-.378L18.399 19.542a5.543 5.543 0 0 1-3.004.883c-3.064 0-5.557-2.476-5.557-5.52 0-3.044 2.493-5.521 5.557-5.521 3.065 0 5.558 2.477 5.558 5.52 0 .874-.21 1.697-.576 2.432l3.133 2.803c.608.546.657 1.482.11 2.088ZM3.977 7.454c0 .222.014.444.04.659a.426.426 0 0 1-.352.473C2.605 8.858.862 9.681.862 12.148c0 1.863 1.034 2.892 1.902 3.427.297.185.647.284 1.017.288l5.195.005v.856l-5.2-.005a2.815 2.815 0 0 1-1.469-.418C1.447 15.77 0 14.524 0 12.148c0-2.864 1.971-3.923 3.129-4.297a6.093 6.093 0 0 1-.013-.397c0-2.34 1.598-4.767 3.716-5.645 2.478-1.031 5.104-.52 7.022 1.367a7.048 7.048 0 0 1 1.459 2.116 2.79 2.79 0 0 1 1.78-.644c1.287 0 2.735.97 2.993 3.092 1.205.276 3.751 1.24 3.751 4.441 0 1.278-.403 2.333-1.199 3.137l-.614-.6c.632-.638.952-1.491.952-2.537 0-2.8-2.36-3.495-3.374-3.664a.43.43 0 0 1-.353-.496c-.141-1.738-1.18-2.517-2.156-2.517-.616 0-1.193.298-1.584.818a.431.431 0 0 1-.75-.111c-.353-.971-.861-1.788-1.511-2.426-1.663-1.636-3.936-2.079-6.084-1.186-1.787.74-3.187 2.873-3.187 4.855Z" fill="#FF4F8B"/>
+  </g></svg>
+  <text x="390" y="142" text-anchor="middle" class="lbl" style="font-size:14px">CloudWatch</text>
+  <text x="390" y="162" text-anchor="middle" class="sm" style="font-size:12px">métriques</text>
+  <text x="390" y="178" text-anchor="middle" class="sm" style="font-size:12px">et alarmes</text>
+  <path d="M470,143 L508,143" class="ar" marker-end="url(#al-k)"/>
+  <rect x="510" y="108" width="120" height="70" rx="9" class="bg"/>
+  <svg x="557" y="114" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><g transform="translate(-722.7 -1245.0)"><use href="#sym-9" x="727.7" y="1250" width="22" height="22"/></g></svg>
+  <text x="570" y="160" text-anchor="middle" class="lbl" style="font-size:13px">SNS</text>
+  <text x="570" y="174" text-anchor="middle" class="sm" style="font-size:11px">notification</text>
+  <rect x="670" y="80" width="140" height="34" rx="9" class="box"/>
+  <text x="740" y="102" text-anchor="middle" class="lbl" style="font-size:12px">E-mail</text>
+  <path d="M630,143 L650,143 L650,97 L668,97" class="ar" marker-end="url(#al-k)"/>
+  <rect x="670" y="128" width="140" height="34" rx="9" class="box"/>
+  <text x="740" y="150" text-anchor="middle" class="lbl" style="font-size:12px">Slack</text>
+  <path d="M630,143 L650,143 L650,145 L668,145" class="ar" marker-end="url(#al-k)"/>
+  <rect x="670" y="176" width="140" height="34" rx="9" class="box"/>
+  <text x="740" y="198" text-anchor="middle" class="lbl" style="font-size:12px">SMS, cas critiques</text>
+  <path d="M630,143 L650,143 L650,193 L668,193" class="ar" marker-end="url(#al-k)"/>
+  <path d="M810,97 L826,97" class="ar"/>
+  <path d="M810,145 L826,145" class="ar"/>
+  <path d="M810,193 L826,193" class="ar"/>
+  <path d="M826,97 L826,193" class="ar"/>
+  <path d="M826,145 L838,145" class="ar" marker-end="url(#al-k)"/>
+  <rect x="840" y="96" width="206" height="98" rx="9" class="box"/>
+  <svg x="930" y="104" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#sym-22" x="5" y="5" width="22" height="22"/></svg>
+  <text x="943" y="150" text-anchor="middle" class="lbl" style="font-size:14px">Équipe technique</text>
+  <text x="943" y="170" text-anchor="middle" class="sm" style="font-size:12px">reçoit les alertes, suit Grafana</text>
+  <text x="943" y="186" text-anchor="middle" class="sm" style="font-size:12px">pendant les directs</text>
+  <path d="M390,198 L390,226" class="ar" marker-end="url(#al-k)"/>
+  <rect x="310" y="228" width="160" height="74" rx="9" class="bg"/>
+  <svg x="377" y="234" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#ico-grafana" x="5" y="5" width="22" height="22"/></svg>
+  <text x="390" y="276" text-anchor="middle" class="lbl" style="font-size:13px">Grafana</text>
+  <text x="390" y="292" text-anchor="middle" class="sm" style="font-size:11px">affiche, n'alerte pas</text>
+  <rect x="14" y="262" width="250" height="48" rx="9" class="box"/>
+  <svg x="24" y="273" width="26" height="26" viewBox="0 0 32 32"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><use href="#ico-powerbi" x="5" y="5" width="22" height="22"/></svg>
+  <text x="60" y="283" text-anchor="start" class="lbl" style="font-size:13px">Power BI</text>
+  <text x="60" y="299" text-anchor="start" class="sm" style="font-size:11px">passerelle et actualisations</text>
+  <path d="M264,286 L286,286 L286,334 L943,334 L943,196" class="ar-d" marker-end="url(#al-k-d)"/>
+  <text x="620" y="326" text-anchor="middle" class="sm" style="font-size:11px">notification d'échec d'actualisation, envoyée par le service Power BI</text>
+  <g class="stepb stepl" data-go="sup-1" role="link" tabindex="0"><circle cx="312" cy="90" r="11" style="fill:var(--accent)"/><text x="312" y="94.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">1</text></g>
+  <g class="stepb stepl" data-go="sup-2" role="link" tabindex="0"><circle cx="16" cy="264" r="11" style="fill:var(--accent)"/><text x="16" y="268.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">2</text></g>
+  <g class="stepb stepl" data-go="sup-3" role="link" tabindex="0"><circle cx="312" cy="230" r="11" style="fill:var(--accent)"/><text x="312" y="234.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">3</text></g>
+  <g class="stepb stepl" data-go="sup-4" role="link" tabindex="0"><circle cx="842" cy="98" r="11" style="fill:var(--accent)"/><text x="842" y="102.5" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--bg)">4</text></g>
+</svg>
+</div>
+<p class="cap">Du signal à l'équipe prévenue. Grafana affiche les métriques, CloudWatch et SNS alertent. Chaque numéro renvoie à la ligne de même numéro des tableaux ci-dessous.</p>
+</div>
 <p><b>Ce qui est surveillé, et où.</b></p>
 <div class="wrap"><table>
 <thead><tr><th>Périmètre</th><th>Ce qui est surveillé</th><th>Alerte</th></tr></thead>
 <tbody>
-<tr><td>AWS</td><td>Firehose, Lambda, collecte du CDN, pipelines Airflow, fraîcheur du Bronze et du Silver.</td><td>CloudWatch, puis SNS (e-mail, Slack, SMS pour les cas critiques).</td></tr>
-<tr><td>Power BI</td><td>État de la passerelle de données, réussite de chaque actualisation planifiée, âge des données affiché dans les rapports (date de la dernière actualisation).</td><td>Notifications d'échec d'actualisation du service Power BI. Pour le modèle financier, la tâche Airflow alerte aussi par SNS. Le détail de leur acheminement est dans le LLD.</td></tr>
-<tr><td>Grafana</td><td>Visualisation des métriques CloudWatch du lecteur et du CDN pendant les directs.</td><td>Aucune: Grafana affiche, CloudWatch et SNS alertent.</td></tr>
+<tr id="sup-1"><td><span class="fn">1</span> AWS</td><td>Firehose, Lambda, collecte du CDN, pipelines Airflow, fraîcheur du Bronze et du Silver.</td><td>CloudWatch, puis SNS (e-mail, Slack, SMS pour les cas critiques).</td></tr>
+<tr id="sup-2"><td><span class="fn">2</span> Power BI</td><td>État de la passerelle de données, réussite de chaque actualisation planifiée, âge des données affiché dans les rapports (date de la dernière actualisation).</td><td>Notifications d'échec d'actualisation du service Power BI. Pour le modèle financier, la tâche Airflow alerte aussi par SNS. Le détail de leur acheminement est dans le LLD.</td></tr>
+<tr id="sup-3"><td><span class="fn">3</span> Grafana</td><td>Visualisation des métriques CloudWatch du lecteur et du CDN pendant les directs.</td><td>Aucune: Grafana affiche, CloudWatch et SNS alertent.</td></tr>
 </tbody></table></div>
 <p><b>Délais de détection visés</b> (objectifs de conception). Ils supposent un réglage à une minute du tampon de Firehose, du déclenchement de la Lambda et de la période d'alarme.</p>
 <div class="wrap"><table>
@@ -2082,7 +2307,7 @@ table.cmp td[data-l="Détail"]{white-space:nowrap}
 <div class="wrap"><table>
 <thead><tr><th>Rôle</th><th>Responsabilité en exploitation</th></tr></thead>
 <tbody>
-<tr><td>Équipe technique</td><td>Reçoit les alertes (e-mail, Slack, SMS pour les cas critiques) et suit Grafana pendant les directs.</td></tr>
+<tr id="sup-4"><td><span class="fn">4</span> Équipe technique</td><td>Reçoit les alertes (e-mail, Slack, SMS pour les cas critiques) et suit Grafana pendant les directs.</td></tr>
 <tr><td>Data Engineer</td><td>Traite les incidents de pipelines, avec l'architecte sur les incidents complexes et les arbitrages.</td></tr>
 <tr><td>Analytics Engineers</td><td>Corrigent les modèles de leurs domaines.</td></tr>
 <tr><td>Sponsors métier</td><td>Valident les définitions et les impacts.</td></tr>
@@ -2124,6 +2349,41 @@ table.cmp td[data-l="Détail"]{white-space:nowrap}
 <h2 id="couts">13. FinOps</h2>
 <p>La plateforme data fonctionne avec un budget cible d'environ 5 k€ par mois pour les outils, suivi chaque mois avec la direction.</p>
 <p><b>Coût par outil.</b> Estimation mensuelle de run, en euros, tirée du budget service par service. Ce sont des ordres de grandeur, pas des factures. Les lignes qui suivent le volume (tracking, Athena, S3, Glue Spark, SageMaker) sont dimensionnées pour une audience allant jusqu'à un million d'utilisateurs en AVOD. Les hypothèses de dimensionnement sont en <a href="#s12-4">section 12.4</a>.</p>
+<div class="figure" role="img" aria-label="Répartition du budget par famille d'outils">
+<div class="wrap" style="margin:0">
+<svg viewBox="0 0 1060 150" xmlns="http://www.w3.org/2000/svg">
+  <text x="14" y="22" text-anchor="start" class="lbl" style="font-size:13px">Total des outils: ≈ 4 820 € par mois (estimation)</text>
+  <text x="1046" y="22" text-anchor="end" class="sm" style="font-size:12px">Budget cible: 5 000 €</text>
+  <g class="famseg" data-famclick="ing" role="button" tabindex="0" style="cursor:pointer"><title>Ingestion : 1425 € par mois</title><rect x="15.0" y="36" width="292.1" height="34" rx="3" style="fill:var(--stream)"/></g>
+  <text x="161.1" y="90" text-anchor="middle" class="lbl" style="font-size:11px">Ingestion</text>
+  <text x="161.1" y="120" text-anchor="middle" class="sm" style="font-size:11px">1 425 €</text>
+  <g class="famseg" data-famclick="cal" role="button" tabindex="0" style="cursor:pointer"><title>Calcul et transformation: 950 € par mois</title><rect x="309.1" y="36" width="194.1" height="34" rx="3" style="fill:var(--batch)"/></g>
+  <text x="406.2" y="90" text-anchor="middle" class="lbl" style="font-size:11px">Calcul et</text>
+  <text x="406.2" y="104" text-anchor="middle" class="lbl" style="font-size:11px">transformation</text>
+  <text x="406.2" y="120" text-anchor="middle" class="sm" style="font-size:11px">950 €</text>
+  <g class="famseg" data-famclick="orc" role="button" tabindex="0" style="cursor:pointer"><title>Orchestration et supervision: 905 € par mois</title><rect x="505.2" y="36" width="184.8" height="34" rx="3" style="fill:var(--gov)"/></g>
+  <text x="597.6" y="90" text-anchor="middle" class="lbl" style="font-size:11px">Orchestration</text>
+  <text x="597.6" y="104" text-anchor="middle" class="lbl" style="font-size:11px">et supervision</text>
+  <text x="597.6" y="120" text-anchor="middle" class="sm" style="font-size:11px">905 €</text>
+  <g class="famseg" data-famclick="rst" role="button" tabindex="0" style="cursor:pointer"><title>Restitution : 329 € par mois</title><rect x="692.0" y="36" width="65.9" height="34" rx="3" style="fill:var(--bq)"/></g>
+  <text x="724.9" y="90" text-anchor="middle" class="lbl" style="font-size:11px">Restitution</text>
+  <text x="724.9" y="120" text-anchor="middle" class="sm" style="font-size:11px">329 €</text>
+  <g class="famseg" data-famclick="sup" role="button" tabindex="0" style="cursor:pointer"><title>Sécurité et réseau: 610 € par mois</title><rect x="759.9" y="36" width="123.9" height="34" rx="3" style="fill:var(--gd)"/></g>
+  <text x="821.8" y="90" text-anchor="middle" class="lbl" style="font-size:11px">Sécurité</text>
+  <text x="821.8" y="104" text-anchor="middle" class="lbl" style="font-size:11px">et réseau</text>
+  <text x="821.8" y="120" text-anchor="middle" class="sm" style="font-size:11px">610 €</text>
+  <g class="famseg" data-famclick="sto" role="button" tabindex="0" style="cursor:pointer"><title>Stockage et catalogue: 600 € par mois</title><rect x="885.8" y="36" width="121.8" height="34" rx="3" style="fill:var(--sto)"/></g>
+  <text x="946.7" y="90" text-anchor="middle" class="lbl" style="font-size:11px">Stockage</text>
+  <text x="946.7" y="104" text-anchor="middle" class="lbl" style="font-size:11px">et catalogue</text>
+  <text x="946.7" y="120" text-anchor="middle" class="sm" style="font-size:11px">600 €</text>
+  <rect x="1009.6" y="36" width="35.4" height="34" rx="3" style="fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 3"/>
+  <text x="1027.3" y="90" text-anchor="middle" class="lbl" style="font-size:11px">Écart</text>
+  <text x="1027.3" y="120" text-anchor="middle" class="sm" style="font-size:11px">≈ 180 €</text>
+  <path d="M1046,30 L1046,76" style="stroke:var(--ink);stroke-width:1.5"/>
+</svg>
+</div>
+<p class="cap">Estimation mensuelle par famille d'outils, sur un budget cible de 5 000 €. Cliquez sur une famille pour filtrer le tableau.</p>
+</div>
 <div class="fgroup">
 <div class="fam-tabs" role="radiogroup" aria-label="Familles d'outils">
 <button type="button" class="chk" data-fam="all" aria-pressed="false" style="--c:var(--accent)">Tout afficher</button>
@@ -2319,6 +2579,7 @@ table.cmp td[data-l="Détail"]{white-space:nowrap}
 <tr data-fam="sto"><td><span class="gt"><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><g transform="translate(-451.8 -250.0)"><use href="#ico-datahub" x="455.8" y="254"/></g></svg>DataHub</span></td><td>Catalogue de données open source: définitions, propriétaires, lignage et résultats des tests.</td></tr>
 <tr data-fam="con"><td>DataOps</td><td>Pratiques d'ingénierie appliquées aux données: code versionné, revue, tests et déploiement automatisés.</td></tr>
 <tr data-fam="cal"><td><span class="gt"><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="var(--line)"/><path transform="translate(6 6) scale(0.833333)" d="M17.9004 9.3763a8.1488 8.1488 0 0 0-3.0421-3.1206l1.7708.8385a10.2874 10.2874 0 0 1 3.74 3.0007l3.234-5.9295a2.8546 2.8546 0 0 0-.0611-2.9604C22.7566.0371 21.2112-.3409 19.9754.3327l-5.8749 3.2101a4.3612 4.3612 0 0 1-4.1761 0L4.1769.408a2.8545 2.8545 0 0 0-2.9592.0632c-1.1673.7853-1.5452 2.33-.8723 3.5655L3.55 9.9106a4.3612 4.3612 0 0 1 0 4.1772l-3.1272 5.743a2.86 2.86 0 0 0 .085 2.9974c.794 1.1438 2.3225 1.5054 3.5448.8385l6.0581-3.3049a10.2877 10.2877 0 0 1-3.0051-3.7454l-.8374-1.7708a8.148 8.148 0 0 0 3.1206 3.0421l10.5832 5.779c1.2213.666 2.7481.3055 3.5426-.8363a2.8699 2.8699 0 0 0 .0796-3.0018L17.9004 9.3763zm3.3801-7.7351c.6022 0 1.0904.4882 1.0904 1.0904s-.4882 1.0904-1.0904 1.0904-1.0904-.4882-1.0904-1.0904.4882-1.0904 1.0904-1.0904zM2.7442 3.822c-.6022 0-1.0904-.4882-1.0904-1.0904s.4882-1.0904 1.0904-1.0904 1.0904.4882 1.0904 1.0904S3.3464 3.822 2.7442 3.822zm0 18.5363c-.6022 0-1.0904-.4882-1.0904-1.0904 0-.6022.4882-1.0904 1.0904-1.0904s1.0904.4882 1.0904 1.0904c0 .6022-.4882 1.0904-1.0904 1.0904zm10.3585-11.4489c-1.2008-.0035-2.177.9672-2.1805 2.1679a2.1738 2.1738 0 0 0 .7052 1.6091c-1.4872-.2091-2.5234-1.5843-2.3142-3.0716.2091-1.4872 1.5843-2.5234 3.0716-2.3142a2.7194 2.7194 0 0 1 2.3142 2.3142 2.1623 2.1623 0 0 0-1.5963-.7054zm8.1778 11.4489c-.6022 0-1.0904-.4882-1.0904-1.0904 0-.6022.4882-1.0904 1.0904-1.0904s1.0904.4882 1.0904 1.0904c0 .6022-.4882 1.0904-1.0904 1.0904z" fill="#FF694B"/></svg>dbt (dbt Cloud, dbt Core)</span></td><td>Outil de transformation en SQL, avec tests, contrats et documentation. dbt Cloud en production, dbt Core en dev.</td></tr>
+<tr data-fam="con"><td>Dimension conforme</td><td>Dimension partagée par plusieurs tables de faits, avec les mêmes clés et les mêmes valeurs, ce qui permet de croiser leurs chiffres.</td></tr>
 <tr data-fam="sec"><td>Droit à l'oubli</td><td>Obligation RGPD de supprimer les données d'une personne qui le demande.</td></tr>
 <tr data-fam="ing"><td><span class="gt"><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="0" y="0" width="32" height="32" rx="7" fill="#fff" stroke="#FF9900" stroke-width="1.6"/><use href="#sym-21" x="5" y="5" width="22" height="22"/></svg>DynamoDB (Amazon DynamoDB)</span></td><td>Base clé-valeur managée. Elle garde les points de reprise de la Lambda du tracking (dernier snapshot Iceberg traité) et de la collecte des logs du CDN, ainsi que l'état des lectures en cours qui sert à détecter les lectures simultanées.</td></tr>
 <tr data-fam="orc"><td>ECR (Amazon ECR)</td><td>Registre d'images de conteneurs d'AWS, où GitHub Actions publie les images.</td></tr>
@@ -2509,6 +2770,13 @@ HLD de la plateforme data d'Artify. Document de conception à grande maille, com
   g.addEventListener('fgroup-render',sync); sync();
   window.addEventListener('beforeprint',function(){c[0].innerHTML=full[0]; c[1].innerHTML=full[1]; c[2].innerHTML=full[2];});
   window.addEventListener('afterprint',sync);
+})();
+</script>
+<script>
+(function(){
+  function pick(el){var f=el.getAttribute('data-famclick');var h=document.getElementById('couts');var g=h&&h.nextElementSibling;while(g&&!(g.classList&&g.classList.contains('fgroup')))g=g.nextElementSibling;if(!g)return;var b=g.querySelector('.fam-tabs button[data-fam="'+f+'"]');if(b){b.click();g.scrollIntoView({behavior:'smooth',block:'start'});}}
+  document.addEventListener('click',function(e){var el=e.target.closest&&e.target.closest('[data-famclick]');if(el)pick(el);});
+  document.addEventListener('keydown',function(e){if(e.key!=='Enter'&&e.key!==' ')return;var el=e.target.closest&&e.target.closest('[data-famclick]');if(el){e.preventDefault();pick(el);}});
 })();
 </script>
 </body>
